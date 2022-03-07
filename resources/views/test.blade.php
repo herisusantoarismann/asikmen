@@ -15,7 +15,7 @@ Test
     @endforeach
 </ul>
 <div class="container">
-    <h5>Anxiety Test</h5>
+    <h5 data-id-user="{{ Auth::id() }}" class="test-name">Anxiety Test</h5>
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between">
@@ -85,7 +85,8 @@ Test
 <script type="text/javascript">
     $(document).ready(function(){
         let pertanyaan;
-        let jawaban = {};
+        let jawabanPointer = {};
+        let jawaban = {}
         $.ajax({
             url: "/test",
             type: 'GET',
@@ -97,12 +98,14 @@ Test
                 }
                 $('.pertanyaan').append(res.pertanyaan[0].pertanyaan)
                 $('.pertanyaan').attr('data-id', 0);
+                $('.pertanyaan').attr('data-pointer', res.pertanyaan[0].id_pertanyaan);
+                $('.test-name').attr('data-id-test', res.pertanyaan[0].id_tes);
             }
         });
         $('#prevQuestion').click(function(){
             let id = $('.pertanyaan').attr('data-id');
-            if(jawaban[id-1]){
-                $(`#jawab${jawaban[id-1]}`).prop('checked', true);
+            if(jawabanPointer[id-1]){
+                $(`#jawab${jawabanPointer[id-1]}`).prop('checked', true);
             }
             else{
                 $(':radio').each(function () {
@@ -114,14 +117,16 @@ Test
                 id=--id;
                 $('.pertanyaan').text(pertanyaan[id].pertanyaan)
                 $('.pertanyaan').attr('data-id', id);
+                $('.pertanyaan').attr('data-pointer', pertanyaan[id].id_pertanyaan);
             }
             else{
                 $('.pertanyaan').text(pertanyaan[id].pertanyaan)
                 $('.pertanyaan').attr('data-id', id);
+                $('.pertanyaan').attr('data-pointer', pertanyaan[id].id_pertanyaan);
             }
             $('.stepper li').each(function(index){
                 if(index == id){
-                    if(jawaban[index]){
+                    if(jawabanPointer[index]){
                     $(this).removeClass('step-success')
                     }
                     $(this).addClass('step-active')
@@ -135,8 +140,9 @@ Test
         })
         $('#nextQuestion').click(function(){
             let id = $('.pertanyaan').attr('data-id');
-            if(jawaban[++id]){
-                $(`#jawab${jawaban[id]}`).prop('checked', true);
+            let pointer = $('.pertanyaan').attr('data-pointer');
+            if(jawabanPointer[++id]){
+                $(`#jawab${jawabanPointer[id]}`).prop('checked', true);
             }
             else{
                 $(':radio').each(function () {
@@ -147,21 +153,23 @@ Test
             if(id < pertanyaan.length - 1){ 
                 $('.pertanyaan').text(pertanyaan[id].pertanyaan)
                 $('.pertanyaan').attr('data-id', id); 
+                $('.pertanyaan').attr('data-pointer', pertanyaan[id].id_pertanyaan); 
             } 
             else{ 
                 $('.pertanyaan').text(pertanyaan[id].pertanyaan)
                 $('.pertanyaan').attr('data-id', id); 
+                $('.pertanyaan').attr('data-pointer', pertanyaan[id].id_pertanyaan); 
                 $('.navigationQuestion').css('display', 'none');
                 $('.submitQuestion').css('display', 'flex');
             }
             $('.stepper li').each(function(index){
                 if(index == id){
-                    if(jawaban[index]){
+                    if(jawabanPointer[index]){
                         $(this).removeClass('step-success')
                     }
                     $(this).addClass('step-active')
                 }
-                else if(jawaban[index]){
+                else if(jawabanPointer[index]){
                     $(this).addClass('step-success')
                 }else{
                     $(this).removeClass('step-active')
@@ -170,7 +178,42 @@ Test
         })
         $('input[name="jawaban"]').change(function(){
             let id = $('.pertanyaan').attr('data-id');
-            jawaban[id] = $('input[name="jawaban"]:checked').val();
+            let pointer = $('.pertanyaan').attr('data-pointer');
+            jawabanPointer[id] = $('input[name="jawaban"]:checked').val();
+            jawaban[pointer] = $('input[name="jawaban"]:checked').val();
+        })
+
+        $('.submitQuestion').click(function(){
+            delete jawaban[0]
+            if(Object.keys(jawaban).length < pertanyaan.length){
+                alert("Belum selesai")
+            }else{
+                let id_user = $('.test-name').attr('data-id-user');
+                let id_tes = $('.test-name').attr('data-id-test');
+
+                let formData = new FormData();
+                formData.append('id_user', id_user)
+                formData.append('id_mental', id_tes)
+                formData.append('jawaban', JSON.stringify(jawaban))
+
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "/test",
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json', // added data type
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        console.log(res.jawaban)
+                    },
+                    error:function(res){
+                        console.log(res.responseJSON.message)
+                    }
+                })
+            }
         })
     })
     
