@@ -90,7 +90,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="post">
+            <form method="post" id="editGejalaForm">
                 @csrf
                 <div class="modal-body">
                     <input type="hidden" name="id_gejala" value="1" id="edit_idGejala">
@@ -115,7 +115,7 @@
     </div>
 </div>
 <!-- Delete Mental Modal -->
-<div class="modal fade" id="deleteGejala" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+<div class="modal fade" id="deleteGejalaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -125,7 +125,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="post" id="deleteGejala">
+            <form method="post" id="deleteGejalaForm">
                 @csrf
                 <div class="modal-body">
                     <p>Are you sure?</p>
@@ -154,7 +154,7 @@
 @section('js')
 <script type="text/javascript">
     $(document).ready(function(){
-        let gejala;
+        let faktor;
         const getData = () => {
             let dataList = []
             $.ajax({
@@ -165,7 +165,7 @@
                 type: 'GET',
                 dataType: 'json', // added data type
                 success: function(res) {
-                    gejala = res.faktor;
+                    faktor = res.faktor;
                     for(let i = 1; i <= res.gejala.length; i++){ 
                         let data = res.gejala.filter((item)=> {
                             return item.id_mental == i;
@@ -186,9 +186,9 @@
                             tableRow+=`<th scope="row">${item2.namaFaktor}</th>`
                             tableRow+=`<th scope="row" width="30%">${item2.nama}</th>`
                             tableRow+=`<td><button type="button" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
-                                <button type="button" class="btn btn-warning editButton" data-id="${item2.id_gejala}"
+                                <button type="button" class="btn btn-warning editButton" data-id="${item2.id_gejala}" data-faktor="${item2.id_mental}"
                                     data-bs-target="#editGejalaModal" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
-                                <button type="button" class="btn btn-danger deleteButton" data-id="${item2.id_gejala}"
+                                <button type="button" class="btn btn-danger deleteButton" data-id="${item2.id_gejala}" data-faktor="${item2.id_mental}"
                                     data-bs-target="#deleteGejalaModal" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
                             </td>`
                             tableRow+='</tr>'
@@ -207,13 +207,13 @@
 
         $('.addGejala').click(function(){
             let id = $(this).data('id')
-            let faktor = gejala.filter((item) => {
+            let faktorList = faktor.filter((item) => {
                 return item.id_mental == id
             })
             let option;
             let select = $('.add_idFaktor');
             select.empty()
-            faktor.map((item) => {
+            faktorList.map((item) => {
                 option+= `<option value="${item.id_faktor}">${item.nama}</option>`
                 select.append(option)
                 option = ''
@@ -275,16 +275,16 @@
 
         $('.gejalaTable').on('click','.editButton', function(){
             let id = $(this).data('id');
+            let idMental = $(this).data('faktor')
             $('#edit_idGejala').attr('value', id);
 
-            let faktor = gejala.filter((item) => {
-                return item.id_mental == id
+            let faktorList = faktor.filter((item) => {
+                return item.id_mental == idMental
             })
             let option;
             let select = $('.edit_idFaktor');
             select.empty()
-            console.log(gejala)
-            faktor.map((item) => {
+            faktorList.map((item) => {
                 option+= `<option value="${item.id_faktor}">${item.nama}</option>`
                 select.append(option)
                 option = ''
@@ -311,11 +311,11 @@
             })
         })
 
-        $('#editGejala').on('shown.bs.modal', function(){
+        $('#editGejalaModal').on('shown.bs.modal', function(){
             $(this).find('#edit_nama').focus()
         })
 
-        $('#editGejala').on('submit',function(e){
+        $('#editGejalaForm').on('submit',function(e){
             e.preventDefault();
 
             let formData = new FormData();
@@ -348,7 +348,7 @@
                         var toast = new bootstrap.Toast($('.toast'))
                         toast.show()
                         getData()
-                        $('#editGejala').modal('toggle')
+                        $('#editGejalaModal').modal('toggle')
                         $('#add_idFaktor').val('')
                         $('#add_nama').val('')
                         setTimeout(() => {
@@ -370,7 +370,7 @@
             $('#delete_idGejala').attr('value', id);
         })
 
-        $('#deleteGejala').on('submit',function(e){
+        $('#deleteGejalaForm').on('submit',function(e){
             e.preventDefault();
 
             let formData = new FormData();
@@ -402,7 +402,7 @@
                         var toast = new bootstrap.Toast($('.toast'))
                         toast.show()
                         getData()
-                        $('#deleteGejala').modal('toggle')
+                        $('#deleteGejalaModal').modal('toggle')
                         setTimeout(() => {
                             toast.hide()
                             $('.toast-title').text("")
