@@ -27,6 +27,8 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/dashboard', [HomeController::class,'index'])->name('dashboard');
 Route::get('/profile', [HomeController::class,'profile'])->name('profile');
+Route::post('/profile{id}', [HomeController::class,'editProfile'])->name('editProfile');
+Route::post('/profile', [HomeController::class,'updateProfile'])->name('postProfile');
 
 Route::get('/question', [QuestionController::class,'index'])->name('question');
 Route::post('/question', [QuestionController::class,'save'])->name('postQuestion');

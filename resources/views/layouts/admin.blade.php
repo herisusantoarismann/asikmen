@@ -64,7 +64,7 @@
 
             <!-- Nav Item - Profile -->
             <li class="nav-item {{(Route::is('profile')) ? 'active' : ''}}">
-                <a class="nav-link">
+                <a class="nav-link" href="{{ route('profile') }}">
                     <i class="fas fa-fw fa-user"></i>
                     <span>{{ __('Profile') }}</span>
                 </a>

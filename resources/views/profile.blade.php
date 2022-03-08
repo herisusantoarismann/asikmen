@@ -38,29 +38,8 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="text-center">
-                            <h5 class="font-weight-bold">{{ Auth::user()->fullName }}</h5>
-                            <p>Administrator</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card-profile-stats">
-                            <span class="heading">22</span>
-                            <span class="description">Friends</span>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card-profile-stats">
-                            <span class="heading">10</span>
-                            <span class="description">Photos</span>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card-profile-stats">
-                            <span class="heading">89</span>
-                            <span class="description">Comments</span>
+                            <h5 class="font-weight-bold">{{ Auth::user()->name }}</h5>
+                            <p>{{ Auth::user()->email }}</p>
                         </div>
                     </div>
                 </div>
@@ -79,28 +58,19 @@
 
             <div class="card-body">
 
-                <form method="POST" action="" autocomplete="off">
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <form method="POST" action="" autocomplete="off" id="editProfile">
 
-                    <input type="hidden" name="_method" value="PUT">
-
-                    <h6 class="heading-small text-muted mb-4">User information</h6>
+                    <h6 class="heading-small text-muted mb-4 title-profile" data-id="{{ Auth::id() }}">User information
+                    </h6>
 
                     <div class="pl-lg-4">
                         <div class="row">
-                            <div class="col-lg-6">
-                                <div class="form-group focused">
-                                    <label class="form-control-label" for="name">Name<span
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="email">Name<span
                                             class="small text-danger">*</span></label>
-                                    <input type="text" id="name" class="form-control" name="name" placeholder="Name"
-                                        value="{{ old('name', Auth::user()->name) }}">
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="form-group focused">
-                                    <label class="form-control-label" for="last_name">Last name</label>
-                                    <input type="text" id="last_name" class="form-control" name="last_name"
-                                        placeholder="Last name" value="{{ old('last_name', Auth::user()->last_name) }}">
+                                    <input type="hidden" name="id_user" id="id_user">
+                                    <input type="text" id="name" class="form-control" name="name" placeholder="Nama">
                                 </div>
                             </div>
                         </div>
@@ -111,8 +81,7 @@
                                     <label class="form-control-label" for="email">Email address<span
                                             class="small text-danger">*</span></label>
                                     <input type="email" id="email" class="form-control" name="email"
-                                        placeholder="example@example.com"
-                                        value="{{ old('email', Auth::user()->email) }}">
+                                        placeholder="Email">
                                 </div>
                             </div>
                         </div>
@@ -135,7 +104,7 @@
                             <div class="col-lg-4">
                                 <div class="form-group focused">
                                     <label class="form-control-label" for="confirm_password">Confirm password</label>
-                                    <input type="password" id="confirm_password" class="form-control"
+                                    <input type="password" id="password_confirmation" class="form-control"
                                         name="password_confirmation" placeholder="Confirm password">
                                 </div>
                             </div>
@@ -160,4 +129,107 @@
 
 </div>
 
+@endsection
+@section('toast')
+<div style="z-index: 50; position: fixed; bottom:0; right:0; padding:10px;">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header text-white">
+            <strong class="me-auto toast-title"></strong>
+        </div>
+        <div class="toast-body toast-text">
+        </div>
+    </div>
+</div>
+@endsection
+@section('js')
+<script type="text/javascript">
+    $(document).ready(function(){
+        const getData = () => {
+            let id = $('.title-profile').data('id')
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/profile" + id,
+                type: 'POST',
+                dataType: 'json', // added data type
+                success: function(res) {
+                    $('#id_user').attr('value', res.data.id)
+                    $('#name').attr('value', res.data.name)
+                    $('#email').attr('value', res.data.email)
+                },
+                error:function(res){
+                    console.log(res.responseJSON.message)
+                }
+            })
+        }
+
+        getData();
+
+        $('#editProfile').submit(function(e) {
+            e.preventDefault()
+
+            let formData = new FormData();
+            formData.append('id_user', $('#id_user').val())
+            formData.append('name', $('#name').val())
+            formData.append('email', $('#email').val())
+            formData.append('old_password', $('#current_password').val())
+            formData.append('new_password', $('#new_password').val())
+            formData.append('password_confirmation', $('#password_confirmation').val())
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/profile",
+                type: 'POST',
+                data: formData,
+                dataType: 'json', // added data type
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    if(res.status == "Gagal"){
+                        $('.toast-header').addClass('bg-danger')
+                        $('.toast-title').append(res.status)
+                        $('.toast-text').append(res.message)
+                        var toast = new bootstrap.Toast($('.toast'))
+                        toast.show()
+                        setTimeout(() => {
+                            $('.toast-title').append("")
+                            $('.toast-text').append("")
+                            $('.toast-header').removeClass('bg-danger')
+                        }, 4000)
+                    }else{
+                        $('.toast-header').addClass('bg-primary')
+                        $('.toast-title').append(res.status)
+                        $('.toast-text').append(res.message)
+                        var toast = new bootstrap.Toast($('.toast'))
+                        toast.show()
+                        getData()
+                        setTimeout(() => {
+                            toast.hide()
+                            $('.toast-title').text("")
+                            $('.toast-text').text("")
+                            $('.toast-header').removeClass('bg-primary')
+                        }, 4000);
+                    }
+                },
+                error:function(res){
+                    $('.toast-title').append("Error")
+                    $('.toast-text').append(res.responseJSON.message)
+                    $('.toast-header').addClass('bg-danger')
+                    var toast = new bootstrap.Toast($('.toast'))
+                    toast.show()
+                    setTimeout(() => {
+                        toast.hide()
+                        $('.toast-title').append("")
+                        $('.toast-text').append("")
+                        $('.toast-header').removeClass('bg-danger')
+                    }, 4000)
+                }
+            })
+        })
+    })
+</script>
 @endsection
