@@ -20,14 +20,16 @@
 </div>
 @endif
 
+@foreach($mental as $m)
 <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">Question List</h6>
-        <button type="button" class="btn btn-primary" data-bs-target="#addQuestion" data-bs-toggle="modal">Add
+        <h6 class="m-0 font-weight-bold text-primary">Pertanyaan {{$m->nama}}</h6>
+        <button type="button" class="btn btn-primary addQuestion" id="addQuestion" data-id="{{$m->id_mental}}"
+            data-bs-target="#addQuestionModal" data-bs-toggle="modal">Add
             New</button>
     </div>
     <div class="card-body">
-        <table class="table table-hover text-center">
+        <table class="table table-hover text-center question{{$m->id_mental}}Table">
             <thead>
                 <tr>
                     <th scope="col">No</th>
@@ -35,13 +37,14 @@
                     <th scope="col">Action</th>
                 </tr>
             </thead>
-            <tbody class="anxietyTable">
+            <tbody class="question{{$m->id_mental}} questionBody">
             </tbody>
         </table>
     </div>
 </div>
+@endforeach
 <!-- Add Question Modal -->
-<div class="modal fade" id="addQuestion" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+<div class="modal fade" id="addQuestionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -51,10 +54,10 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="post" id="addQuestion">
+            <form method="post" id="addQuestionForm">
                 @csrf
                 <div class="modal-body">
-                    <input type="hidden" name="id_tes" value="1" id="add_idTes">
+                    <input type="hidden" name="id_tes" id="add_idTes">
                     <div class="form-group">
                         <label for="exampleFormControlTextarea1">Pertanyaan</label>
                         <textarea class="form-control" id="add_pertanyaan" rows="3" name="pertanyaan"
@@ -70,7 +73,7 @@
     </div>
 </div>
 <!-- Edit Question Modal -->
-<div class="modal fade" id="editQuestion" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+<div class="modal fade" id="editQuestionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -80,7 +83,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="post">
+            <form method="post" id="editQuestionForm">
                 @csrf
                 <div class="modal-body">
                     <input type="hidden" name="id_pertanyaan" value="1" id="edit_idPertanyaan">
@@ -99,7 +102,7 @@
     </div>
 </div>
 <!-- Delete Question Modal -->
-<div class="modal fade" id="deleteQuestion" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+<div class="modal fade" id="deleteQuestionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -109,7 +112,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="post" id="deleteQuestion">
+            <form method="post" id="deleteQuestionForm">
                 @csrf
                 <div class="modal-body">
                     <p>Are you sure?</p>
@@ -136,45 +139,75 @@
 </div>
 @endsection
 @section('js')
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
         const getData = () => {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: "/question",
-                type: 'GET',
-                dataType: 'json', // added data type
-                success: function(res) {
-                    $('.anxietyTable').empty()
-                    let table = $('.anxietyTable');
-                    res.questionAnxiety.map((item, index) => {
-                        table.append('<tr>')
-                        table.append(`<th scope="row">${index+1}</th>`)
-                        table.append(`<th scope="row">${item.pertanyaan}</th>`)
-                        table.append(`<td><button type="button" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
-                            <button type="button" class="btn btn-warning editButton" data-id="${item.id_pertanyaan}"
-                                data-bs-target="#editQuestion" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
-                            <button type="button" class="btn btn-danger deleteButton" data-id="${item.id_pertanyaan}"
-                                data-bs-target="#deleteQuestion" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
-                        </td>`)
-                        table.append('</tr>')
-                    })
-                },
-                error:function(res){
-                    console.log(res.responseJSON.message)
-                }
-            })
+            // $.ajax({
+            //     headers: {
+            //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //     },
+            //     url: "/question",
+            //     type: 'GET',
+            //     dataType: 'json', // added data type
+            //     success: function(res) {
+            //         $('.anxietyTable').empty()
+            //         let table = $('.anxietyTable');
+            //         res.questionAnxiety.map((item, index) => {
+            //             table.append('<tr>')
+            //             table.append(`<th scope="row">${index+1}</th>`)
+            //             table.append(`<th scope="row">${item.pertanyaan}</th>`)
+            //             table.append(`<td><button type="button" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
+            //                 <button type="button" class="btn btn-warning editButton" data-id="${item.id_pertanyaan}"
+            //                     data-bs-target="#editQuestion" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
+            //                 <button type="button" class="btn btn-danger deleteButton" data-id="${item.id_pertanyaan}"
+            //                     data-bs-target="#deleteQuestion" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
+            //             </td>`)
+            //             table.append('</tr>')
+            //         })
+            //     },
+            //     error:function(res){
+            //         console.log(res.responseJSON.message)
+            //     }
+            // })
+
+            let count = $('tbody[class*="question"');
+            
+            let table;
+            for(let i = 0; i < count.length; i++){ 
+                let id=count[i].className.replace(/\D/g, "" ); 
+                let className=count[i].className.split(" ")
+                table = $('.'+className[0] + 'Table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: " /getquestion" + id, 
+                    columns: [ 
+                        {data: 'DT_RowIndex' , name: 'DT_RowIndex' },
+                        {data: 'pertanyaan' ,name: 'pertanyaan' }, 
+                        {data: 'action' , name: 'action' , orderable: true, searchable: true }, 
+                    ], 
+                    bDestroy: true, 
+                    dom:'<"d-flex justify-content-between"lf>t<"d-flex justify-content-between"ip>',
+                });
+            }
         }
 
         getData();
 
-        $('#addQuestion').on('shown.bs.modal', function(){
+        $('.addQuestion').click(function(){
+            let id = $(this).data('id')
+            $('#add_idTes').attr('value', id)
+        })
+
+        $('#addQuestionModal').on('shown.bs.modal', function(){
             $(this).find('#add_pertanyaan').focus()
         })
 
-        $('#addQuestion').on('submit',function(e){
+        $('#addQuestionForm').on('submit',function(e){
             e.preventDefault();
 
             let formData = new FormData();
@@ -192,17 +225,17 @@
                 processData: false,
                 contentType: false,
                 success: function(res) {
-                    $('.toast-title').append(res.status)
-                    $('.toast-text').append(res.message)
-                    var toast = new bootstrap.Toast($('.toast'))
-                    toast.show()
+                    // $('.toast-title').append(res.status)
+                    // $('.toast-text').append(res.message)
+                    // var toast = new bootstrap.Toast($('.toast'))
+                    // toast.show()
                     getData()
-                    $('#addQuestion').modal('toggle')
-                    setTimeout(() => {
-                        toast.hide()
-                        $('.toast-title').text("")
-                        $('.toast-text').text("")
-                    }, 4000);
+                    $('#addQuestionModal').modal('toggle')
+                    // setTimeout(() => {
+                    //     toast.hide()
+                    //     $('.toast-title').text("")
+                    //     $('.toast-text').text("")
+                    // }, 4000);
                 },
                 error:function(res){
                     console.log(res.responseJSON.message)
@@ -210,7 +243,7 @@
             })
         })
 
-        $('.anxietyTable').on('click','.editButton', function(){
+        $('.questionBody').on('click','.editButton', function(){
             let id = $(this).data('id');
             $('#edit_idPertanyaan').attr('value', id);
 
@@ -235,11 +268,11 @@
             })
         })
 
-        $('#editQuestion').on('shown.bs.modal', function(){
+        $('#editQuestionModal').on('shown.bs.modal', function(){
             $(this).find('#edit_pertanyaan').focus()
         })
 
-        $('#editQuestion').on('submit',function(e){
+        $('#editQuestionForm').on('submit',function(e){
             e.preventDefault();
 
             let formData = new FormData();
@@ -257,17 +290,17 @@
                 processData: false,
                 contentType: false,
                 success: function(res) {
-                    $('.toast-title').append(res.status)
-                    $('.toast-text').append(res.message)
-                    var toast = new bootstrap.Toast($('.toast'))
-                    toast.show()
+                    // $('.toast-title').append(res.status)
+                    // $('.toast-text').append(res.message)
+                    // var toast = new bootstrap.Toast($('.toast'))
+                    // toast.show()
                     getData()
-                    $('#editQuestion').modal('toggle')
-                    setTimeout(() => {
-                        toast.hide()
-                        $('.toast-title').text("")
-                        $('.toast-text').text("")
-                    }, 4000);
+                    $('#editQuestionModal').modal('toggle')
+                    // setTimeout(() => {
+                    //     toast.hide()
+                    //     $('.toast-title').text("")
+                    //     $('.toast-text').text("")
+                    // }, 4000);
                 },
                 error:function(res){
                     console.log(res.responseJSON.message)
@@ -275,12 +308,12 @@
             })
         })
 
-        $('.anxietyTable').on('click', '.deleteButton', function(){
+        $('.questionBody').on('click', '.deleteButton', function(){
             let id = $(this).data('id');
             $('#delete_idPertanyaan').attr('value', id);
         })
 
-        $('#deleteQuestion').on('submit',function(e){
+        $('#deleteQuestionForm').on('submit',function(e){
             e.preventDefault();
 
             let formData = new FormData();
@@ -298,17 +331,17 @@
                 processData: false,
                 contentType: false,
                 success: function(res) {
-                    $('.toast-title').append(res.status)
-                    $('.toast-text').append(res.message)
-                    var toast = new bootstrap.Toast($('.toast'))
-                    toast.show()
+                    // $('.toast-title').append(res.status)
+                    // $('.toast-text').append(res.message)
+                    // var toast = new bootstrap.Toast($('.toast'))
+                    // toast.show()
                     getData()
-                    $('#deleteQuestion').modal('toggle')
-                    setTimeout(() => {
-                        toast.hide()
-                        $('.toast-title').text("")
-                        $('.toast-text').text("")
-                    }, 4000);
+                    $('#deleteQuestionModal').modal('toggle')
+                    // setTimeout(() => {
+                    //     toast.hide()
+                    //     $('.toast-title').text("")
+                    //     $('.toast-text').text("")
+                    // }, 4000);
                 },
                 error:function(res){
                     console.log(res.responseJSON.message)

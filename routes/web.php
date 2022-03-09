@@ -31,6 +31,7 @@ Route::post('/profile{id}', [HomeController::class,'editProfile'])->name('editPr
 Route::post('/profile', [HomeController::class,'updateProfile'])->name('postProfile');
 
 Route::get('/question', [QuestionController::class,'index'])->name('question');
+Route::get('/getquestion{id}', [QuestionController::class,'getData'])->name('getquestion');
 Route::post('/question', [QuestionController::class,'save'])->name('postQuestion');
 Route::post('/editquestion{id}', [QuestionController::class,'edit'])->name('editQuestion');
 Route::post('/updatequestion', [QuestionController::class,'update'])->name('updateQuestion');

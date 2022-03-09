@@ -4,18 +4,40 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pertanyaan;
+use App\Models\Mental;
+use Yajra\DataTables\Facades\DataTables;
 
 class QuestionController extends Controller
 {
     public function index(Request $request)
     {
-        $questionAnxiety = Pertanyaan::where('id_tes', 1)->get();
+        $question = Pertanyaan::get();
+        $mental = Mental::get();
         if ($request->ajax()) {
             return response()->json([
-                'questionAnxiety' => $questionAnxiety
+                'question' => $question,
+                
             ]);
         }
-        return view('question')->with('questionAnxiety', $questionAnxiety);
+        return view('question')->with('mental', $mental);
+    }
+
+    public function getData($id)
+    {
+        $pertanyaan = Pertanyaan::where('id_tes', $id)->get();
+        return Datatables::of($pertanyaan)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $actionBtn = '<td><button type="button" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
+                             <button type="button" class="btn btn-warning editButton" data-id="'.$row->id_pertanyaan.'"
+                                  data-bs-target="#editQuestionModal" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
+                             <button type="button" class="btn btn-danger deleteButton" data-id="'.$row->id_pertanyaan.'"
+                             data-bs-target="#deleteQuestionModal" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
+                        </td>';
+                    return $actionBtn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
     }
 
     public function save(Request $request)
