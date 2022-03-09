@@ -5,19 +5,49 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Faktor;
 use App\Models\Mental;
+use Yajra\DataTables\DataTables;
 
 class FaktorController extends Controller
 {
     public function index(Request $request)
     {
-        $faktor = Faktor::get();
         $mental = Mental::get();
         if ($request->ajax()) {
-            return response()->json([
-                'faktor' => $faktor
-            ]);
+            $faktor = Faktor::get();
+
+            return Datatables::of($faktor)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $actionBtn = '<td><button type="button" class="btn btn-success"><i class="fa-solid              fa-magnifying-glass"></i></button>
+                             <button type="button" class="btn btn-warning editButton" data-id="'.$row->id_faktor.'"
+                                 data-bs-target="#editFaktorModal" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
+                             <button type="button" class="btn btn-danger deleteButton" data-id="'.$row->id_faktor.'"
+                            data-bs-target="#deleteFaktorModal" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
+                        </td>';
+                    return $actionBtn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
         }
         return view('factor')->with('mental', $mental);
+    }
+
+    public function getData($id)
+    {
+        $faktor = Faktor::where('id_mental', $id)->get();
+        return Datatables::of($faktor)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $actionBtn = '<td><button type="button" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
+                             <button type="button" class="btn btn-warning editButton" data-id="'.$row->id_faktor.'"
+                                 data-bs-target="#editFaktorModal" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
+                             <button type="button" class="btn btn-danger deleteButton" data-id="'.$row->id_faktor.'"
+                            data-bs-target="#deleteFaktorModal" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
+                        </td>';
+                    return $actionBtn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
     }
 
     public function save(Request $request)

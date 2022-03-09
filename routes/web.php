@@ -43,6 +43,7 @@ Route::post('/updatemental', [MentalController::class,'update'])->name('updateMe
 Route::delete('/mental{id}', [MentalController::class,'delete'])->name('deleteMental');
 
 Route::get('/factor', [FaktorController::class,'index'])->name('factor');
+Route::get('/getfactor{id}', [FaktorController::class,'getData'])->name('getfactor');
 Route::post('/factor', [FaktorController::class,'save'])->name('postFaktor');
 Route::post('/editfaktor{id}', [FaktorController::class,'edit'])->name('editFaktor');
 Route::post('/updatefaktor', [FaktorController::class,'update'])->name('updateFaktor');

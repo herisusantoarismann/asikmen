@@ -23,12 +23,12 @@
 <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex justify-content-between">
         <h6 class="m-0 font-weight-bold text-primary">Mental Illness List</h6>
-        <button type="button" class="btn btn-primary" data-bs-target="#addMental" data-bs-toggle="modal">Add
+        <button type="button" class="btn btn-primary" data-bs-target="#addMentalModal" data-bs-toggle="modal">Add
             New</button>
     </div>
     <div class="card-body">
-        <table class="table table-hover text-center">
-            <thead>
+        <table class="table table-hover mentalTable">
+            <thead class="text-center">
                 <tr>
                     <th scope="col">No</th>
                     <th scope="col">Mental</th>
@@ -36,13 +36,13 @@
                     <th scope="col">Action</th>
                 </tr>
             </thead>
-            <tbody class="mentalTable">
+            <tbody>
             </tbody>
         </table>
     </div>
 </div>
 <!-- Add Mental Modal -->
-<div class="modal fade" id="addMental" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+<div class="modal fade" id="addMentalModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -74,7 +74,7 @@
     </div>
 </div>
 <!-- Edit Mental Modal -->
-<div class="modal fade" id="editMental" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+<div class="modal fade" id="editMentalModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -84,7 +84,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="post">
+            <form method="post" id="editMentalForm">
                 @csrf
                 <div class="modal-body">
                     <input type="hidden" name="id_mental" value="1" id="edit_idMental">
@@ -107,7 +107,7 @@
     </div>
 </div>
 <!-- Delete Mental Modal -->
-<div class="modal fade" id="deleteMental" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+<div class="modal fade" id="deleteMentalModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -117,7 +117,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="post" id="deleteQuestion">
+            <form method="post" id="deleteMentalForm">
                 @csrf
                 <div class="modal-body">
                     <p>Are you sure?</p>
@@ -144,37 +144,61 @@
 </div>
 @endsection
 @section('js')
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
         const getData = () => {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: "/mental",
-                type: 'GET',
-                dataType: 'json', // added data type
-                success: function(res) {
-                    $('.mentalTable').empty()
-                    let table = $('.mentalTable');
-                    res.mental.map((item, index) => {
-                        table.append('<tr>')
-                        table.append(`<th scope="row">${index+1}</th>`)
-                        table.append(`<th scope="row">${item.nama}</th>`)
-                        table.append(`<th scope="row" style="width:50%;">${item.description}</th>`)
-                        table.append(`<td><button type="button" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
-                            <button type="button" class="btn btn-warning editButton" data-id="${item.id_mental}"
-                                data-bs-target="#editMental" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
-                            <button type="button" class="btn btn-danger deleteButton" data-id="${item.id_mental}"
-                                data-bs-target="#deleteMental" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
-                        </td>`)
-                        table.append('</tr>')
-                    })
-                },
-                error:function(res){
-                    console.log(res.responseJSON.message)
-                }
-            })
+            // $.ajax({
+            //     headers: {
+            //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //     },
+            //     url: "/mental",
+            //     type: 'GET',
+            //     dataType: 'json', // added data type
+            //     success: function(res) {
+            //         $('.mentalTable').empty()
+            //         let table = $('.mentalTable');
+            //         res.mental.map((item, index) => {
+            //             table.append('<tr>')
+            //             table.append(`<th scope="row">${index+1}</th>`)
+            //             table.append(`<th scope="row">${item.nama}</th>`)
+            //             table.append(`<th scope="row" style="width:50%;">${item.description}</th>`)
+            //             table.append(`<td><button type="button" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
+            //                 <button type="button" class="btn btn-warning editButton" data-id="${item.id_mental}"
+            //                     data-bs-target="#editMental" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
+            //                 <button type="button" class="btn btn-danger deleteButton" data-id="${item.id_mental}"
+            //                     data-bs-target="#deleteMental" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
+            //             </td>`)
+            //             table.append('</tr>')
+            //         })
+            //     },
+            //     error:function(res){
+            //         console.log(res.responseJSON.message)
+            //     }
+            // })
+
+            var table = $('.mentalTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "/mental",
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                    {data: 'nama', name: 'nama'},
+                    {data: 'description', name: 'description'},
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: true,
+                        searchable: true
+                    },
+                ],
+                bDestroy: true,
+                dom:'<"d-flex justify-content-between"lf>t<"d-flex justify-content-between"ip>',
+            });
         }
 
         getData();
@@ -201,17 +225,17 @@
                 processData: false,
                 contentType: false,
                 success: function(res) {
-                    $('.toast-title').append(res.status)
-                    $('.toast-text').append(res.message)
-                    var toast = new bootstrap.Toast($('.toast'))
-                    toast.show()
+                    // $('.toast-title').append(res.status)
+                    // $('.toast-text').append(res.message)
+                    // var toast = new bootstrap.Toast($('.toast'))
+                    // toast.show()
                     getData()
-                    $('#addMental').modal('toggle')
-                        setTimeout(() => {
-                        toast.hide()
-                        $('.toast-title').text("")
-                        $('.toast-text').text("")
-                    }, 4000);
+                    $('#addMentalModal').modal('toggle')
+                    // setTimeout(() => {
+                    //     toast.hide()
+                    //     $('.toast-title').text("")
+                    //     $('.toast-text').text("")
+                    // }, 4000);
                 },
                 error:function(res){
                     console.log(res.responseJSON.message)
@@ -245,11 +269,11 @@
             })
         })
 
-        $('#editMental').on('shown.bs.modal', function(){
+        $('#editMentalModal').on('shown.bs.modal', function(){
             $(this).find('#edit_nama').focus()
         })
 
-        $('#editMental').on('submit',function(e){
+        $('#editMentalForm').on('submit',function(e){
             e.preventDefault();
 
             let formData = new FormData();
@@ -268,17 +292,17 @@
                 processData: false,
                 contentType: false,
                 success: function(res) {
-                    $('.toast-title').append(res.status)
-                    $('.toast-text').append(res.message)
-                    var toast = new bootstrap.Toast($('.toast'))
-                    toast.show()
+                    // $('.toast-title').append(res.status)
+                    // $('.toast-text').append(res.message)
+                    // var toast = new bootstrap.Toast($('.toast'))
+                    // toast.show()
                     getData()
-                    $('#editMental').modal('toggle')
-                    setTimeout(() => {
-                        toast.hide()
-                        $('.toast-title').text("")
-                        $('.toast-text').text("")
-                    }, 4000);
+                    $('#editMentalModal').modal('toggle')
+                    // setTimeout(() => {
+                    //     toast.hide()
+                    //     $('.toast-title').text("")
+                    //     $('.toast-text').text("")
+                    // }, 4000);
                 },
                 error:function(res){
                     console.log(res.responseJSON.message)
@@ -291,7 +315,7 @@
             $('#delete_idMental').attr('value', id);
         })
 
-        $('#deleteMental').on('submit',function(e){
+        $('#deleteMentalForm').on('submit',function(e){
             e.preventDefault();
 
             let formData = new FormData();
@@ -317,19 +341,19 @@
                             $('.toast-header').removeClass('bg-danger')
                         }, 4000)
                     }else{
-                        $('.toast-header').addClass('bg-primary')
-                        $('.toast-title').append(res.status)
-                        $('.toast-text').append(res.message)
-                        var toast = new bootstrap.Toast($('.toast'))
-                        toast.show()
+                        // $('.toast-header').addClass('bg-primary')
+                        // $('.toast-title').append(res.status)
+                        // $('.toast-text').append(res.message)
+                        // var toast = new bootstrap.Toast($('.toast'))
+                        // toast.show()
                         getData()
-                        $('#deleteMental').modal('toggle')
-                        setTimeout(() => {
-                            toast.hide()
-                            $('.toast-title').text("")
-                            $('.toast-text').text("")
-                            $('.toast-header').removeClass('bg-primary')
-                        }, 4000);
+                        $('#deleteMentalModal').modal('toggle')
+                        // setTimeout(() => {
+                        //     toast.hide()
+                        //     $('.toast-title').text("")
+                        //     $('.toast-text').text("")
+                        //     $('.toast-header').removeClass('bg-primary')
+                        // }, 4000);
                     }
                 },
                 error:function(res){

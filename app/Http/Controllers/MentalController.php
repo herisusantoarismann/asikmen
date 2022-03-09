@@ -4,16 +4,28 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Mental;
+use Yajra\DataTables\DataTables;
 
 class MentalController extends Controller
 {
     public function index(Request $request)
     {
-        $mental = Mental::get();
         if ($request->ajax()) {
-            return response()->json([
-                'mental' => $mental
-            ]);
+            $mental = Mental::get();
+
+            return Datatables::of($mental)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $actionBtn = '<td><button type="button" class="btn btn-success"><i class="fa-solid              fa-magnifying-glass"></i></button>
+                             <button type="button" class="btn btn-warning editButton" data-id="'.$row->id_mental.'"
+                                 data-bs-target="#editMentalModal" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
+                             <button type="button" class="btn btn-danger deleteButton" data-id="'.$row->id_mental.'"
+                            data-bs-target="#deleteMentalModal" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
+                        </td>';
+                    return $actionBtn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
         }
         return view('mental');
     }

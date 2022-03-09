@@ -29,7 +29,7 @@
             New</button>
     </div>
     <div class="card-body">
-        <table class="table table-hover text-center">
+        <table class="table table-hover text-center faktor{{$m->id_mental}}Table">
             <thead>
                 <tr>
                     <th scope="col">No</th>
@@ -38,7 +38,7 @@
                     <th scope="col">Action</th>
                 </tr>
             </thead>
-            <tbody class="faktorTable{{$m->id_mental}} faktorTable">
+            <tbody class="faktor{{$m->id_mental}} faktorBody">
             </tbody>
         </table>
     </div>
@@ -148,53 +148,84 @@
 </div>
 @endsection
 @section('js')
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
         const getData = () => {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: "/factor",
-                type: 'GET',
-                dataType: 'json', // added data type
-                success: function(res) {
-                    let dataList = []
-                    for(let i = 0; i < res.faktor.length; i++){
-                        let data = res.faktor.filter((item) => {
-                            return item.id_mental == i;
-                        })
-                        if(data.length){
-                            dataList.push(data)
-                        }
-                    }
-                    let tableRow;
-                    let table;
-                    dataList.map((item1, index1) => {
-                        $(`.faktorTable${item1[0].id_mental}`).empty()
-                        table = $(`.faktorTable${item1[0].id_mental}`);
-                        dataList[index1].map((item2, index2) => {
-                            tableRow = ''
-                            tableRow+='<tr>'
-                                tableRow+=`<th scope="row">${index2+1}</th>`
-                                tableRow+=`<th scope="row">${item2.nama}</th>`
-                                tableRow+=`<th scope="row" width="30%">${item2.description}</th>`
-                                tableRow+=`<td><button type="button" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
-                                    <button type="button" class="btn btn-warning editButton" data-id="${item2.id_faktor}"
-                                        data-bs-target="#editFaktorModal" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
-                                    <button type="button" class="btn btn-danger deleteButton" data-id="${item2.id_faktor}"
-                                        data-bs-target="#deleteFaktorModal" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
-                                </td>`
-                                tableRow+='</tr>'
-                            table.append(tableRow)
-                        })
-                        table = ""
-                    })
-                },
-                error:function(res){
-                    console.log(res.responseJSON.message)
-                }
-            })
+            // $.ajax({
+            //     headers: {
+            //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //     },
+            //     url: "/factor",
+            //     type: 'GET',
+            //     dataType: 'json', // added data type
+            //     success: function(res) {
+            //         let dataList = []
+            //         for(let i = 0; i < res.faktor.length; i++){
+            //             let data = res.faktor.filter((item) => {
+            //                 return item.id_mental == i;
+            //             })
+            //             if(data.length){
+            //                 dataList.push(data)
+            //             }
+            //         }
+            //         let tableRow;
+            //         let table;
+            //         dataList.map((item1, index1) => {
+            //             $(`.faktorTable${item1[0].id_mental}`).empty()
+            //             table = $(`.faktorTable${item1[0].id_mental}`);
+            //             dataList[index1].map((item2, index2) => {
+            //                 tableRow = ''
+            //                 tableRow+='<tr>'
+            //                     tableRow+=`<th scope="row">${index2+1}</th>`
+            //                     tableRow+=`<th scope="row">${item2.nama}</th>`
+            //                     tableRow+=`<th scope="row" width="30%">${item2.description}</th>`
+            //                     tableRow+=`<td><button type="button" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
+            //                         <button type="button" class="btn btn-warning editButton" data-id="${item2.id_faktor}"
+            //                             data-bs-target="#editFaktorModal" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
+            //                         <button type="button" class="btn btn-danger deleteButton" data-id="${item2.id_faktor}"
+            //                             data-bs-target="#deleteFaktorModal" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
+            //                     </td>`
+            //                     tableRow+='</tr>'
+            //                 table.append(tableRow)
+            //             })
+            //             table = ""
+            //         })
+            //     },
+            //     error:function(res){
+            //         console.log(res.responseJSON.message)
+            //     }
+            // })
+
+            let count = $('tbody[class*="faktor"');
+
+            let table;
+            for(let i = 0; i < count.length; i++){
+                let id = count[i].className.replace(/\D/g, "");
+                let className = count[i].className.split(" ")
+                table = $('.'+className[0] + 'Table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "/getfactor" + id,
+                    columns: [
+                        {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                        {data: 'nama', name: 'nama'},
+                        {data: 'description', name: 'description'},
+                        {
+                            data: 'action',
+                            name: 'action',
+                            orderable: true,
+                            searchable: true
+                        },
+                    ],
+                    bDestroy: true,
+                    dom:'<"d-flex justify-content-between"lf>t<"d-flex justify-content-between"ip>', 
+                });
+            }
         }
 
         getData();
@@ -228,29 +259,29 @@
                 contentType: false,
                 success: function(res) {
                     if(res.status === "Gagal"){
-                        $('.toast-header').addClass('bg-danger')
-                        setTimeout(() => {
-                        $('.toast-title').append(res.status)
-                        $('.toast-text').append(res.message)
-                        $('.toast-header').removeClass('bg-danger')
-                        }, 4000)
+                        // $('.toast-header').addClass('bg-danger')
+                        // setTimeout(() => {
+                        // $('.toast-title').append(res.status)
+                        // $('.toast-text').append(res.message)
+                        // $('.toast-header').removeClass('bg-danger')
+                        // }, 4000)
                     }else{
-                        $('.toast-header').addClass('bg-primary')
-                        $('.toast-title').append(res.status)
-                        $('.toast-text').append(res.message)
-                        var toast = new bootstrap.Toast($('.toast'))
-                        toast.show()
+                        // $('.toast-header').addClass('bg-primary')
+                        // $('.toast-title').append(res.status)
+                        // $('.toast-text').append(res.message)
+                        // var toast = new bootstrap.Toast($('.toast'))
+                        // toast.show()
                         getData()
                         $('#addFaktorModal').modal('toggle')
-                        setTimeout(() => {
-                            toast.hide()
-                        }, 4000);
-                        if(toast.hide()){
-                            $('.toast-title').text("")
-                            $('.toast-text').text("")
-                            $('.toast-header').removeClass('bg-primary')
-                            $('#add_nama').atrr('value', '')
-                        }
+                        // setTimeout(() => {
+                        //     toast.hide()
+                        // }, 4000);
+                        // if(toast.hide()){
+                        //     $('.toast-title').text("")
+                        //     $('.toast-text').text("")
+                        //     $('.toast-header').removeClass('bg-primary')
+                        //     $('#add_nama').atrr('value', '')
+                        // }
                     }
                 },
                 error:function(res){
@@ -259,7 +290,7 @@
             })
         })
 
-        $('.faktorTable').on('click','.editButton', function(){
+        $('.faktorBody').on('click','.editButton', function(){
             let id = $(this).data('id');
             $('#edit_idFaktor').attr('value', id);
 
@@ -309,28 +340,28 @@
                 contentType: false,
                 success: function(res) {
                     if(res.status === "Gagal"){
-                        $('.toast-header').addClass('bg-danger')
-                        setTimeout(() => {
-                            $('.toast-title').append(res.status)
-                            $('.toast-text').append(res.message)
-                            $('.toast-header').removeClass('bg-danger')
-                        }, 4000)
+                        // $('.toast-header').addClass('bg-danger')
+                        // setTimeout(() => {
+                        //     $('.toast-title').append(res.status)
+                        //     $('.toast-text').append(res.message)
+                        //     $('.toast-header').removeClass('bg-danger')
+                        // }, 4000)
                     }else{
-                        $('.toast-header').addClass('bg-primary')
-                        $('.toast-title').append(res.status)
-                        $('.toast-text').append(res.message)
-                        var toast = new bootstrap.Toast($('.toast'))
-                        toast.show()
+                        // $('.toast-header').addClass('bg-primary')
+                        // $('.toast-title').append(res.status)
+                        // $('.toast-text').append(res.message)
+                        // var toast = new bootstrap.Toast($('.toast'))
+                        // toast.show()
                         getData()
                         $('#editFaktorModal').modal('toggle')
-                        setTimeout(() => {
-                            toast.hide()
-                        }, 4000);
-                        if(toast.hide()){
-                            $('.toast-title').text("")
-                            $('.toast-text').text("")
-                            $('.toast-header').removeClass('bg-primary')
-                        }
+                        // setTimeout(() => {
+                        //     toast.hide()
+                        // }, 4000);
+                        // if(toast.hide()){
+                        //     $('.toast-title').text("")
+                        //     $('.toast-text').text("")
+                        //     $('.toast-header').removeClass('bg-primary')
+                        // }
                     }
                 },
                 error:function(res){
@@ -339,7 +370,7 @@
             })
         })
 
-        $('.faktorTable').on('click', '.deleteButton', function(){
+        $('.faktorBody').on('click', '.deleteButton', function(){
             let id = $(this).data('id');
             $('#delete_idFaktor').attr('value', id);
         })
@@ -363,32 +394,32 @@
                 contentType: false,
                 success: function(res) {
                     if(res.status === "Gagal"){
-                        $('.toast-header').addClass('bg-danger')
-                        setTimeout(() => {
-                            $('.toast-title').append(res.status)
-                            $('.toast-text').append(res.message)
-                            $('.toast-header').removeClass('bg-danger')
-                        }, 4000)
+                        // $('.toast-header').addClass('bg-danger')
+                        // setTimeout(() => {
+                        //     $('.toast-title').append(res.status)
+                        //     $('.toast-text').append(res.message)
+                        //     $('.toast-header').removeClass('bg-danger')
+                        // }, 4000)
                     }else{
-                        $('.toast-header').addClass('bg-primary')
-                        $('.toast-title').append(res.status)
-                        $('.toast-text').append(res.message)
-                        var toast = new bootstrap.Toast($('.toast'))
-                        toast.show()
+                        // $('.toast-header').addClass('bg-primary')
+                        // $('.toast-title').append(res.status)
+                        // $('.toast-text').append(res.message)
+                        // var toast = new bootstrap.Toast($('.toast'))
+                        // toast.show()
                         getData()
                         $('#deleteFaktorModal').modal('toggle')
-                        setTimeout(() => {
-                            toast.hide()
-                        }, 4000);
-                        if(toast.hide()){
-                            $('.toast-title').text("")
-                            $('.toast-text').text("")
-                            $('.toast-header').removeClass('bg-primary')
-                        }
+                        // setTimeout(() => {
+                        //     toast.hide()
+                        // }, 4000);
+                        // if(toast.hide()){
+                        //     $('.toast-title').text("")
+                        //     $('.toast-text').text("")
+                        //     $('.toast-header').removeClass('bg-primary')
+                        // }
                     }
                 },
                 error:function(res){
-                    console.log(res.responseJSON.message)
+                    console.log(res.responseJSON)
                 }
             })
         })
