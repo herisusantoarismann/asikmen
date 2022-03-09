@@ -50,6 +50,7 @@ Route::post('/updatefaktor', [FaktorController::class,'update'])->name('updateFa
 Route::delete('/factor{id}', [FaktorController::class,'delete'])->name('deleteFaktor');
 
 Route::get('/gejala', [GejalaController::class,'index'])->name('gejala');
+Route::get('/getgejala{id}', [GejalaController::class,'getData'])->name('getgejala');
 Route::post('/gejala', [GejalaController::class,'save'])->name('postGejala');
 Route::post('/editgejala{id}', [GejalaController::class,'edit'])->name('editGejala');
 Route::post('/updategejala', [GejalaController::class,'update'])->name('updateGejala');

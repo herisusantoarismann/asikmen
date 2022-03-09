@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Gejala;
 use App\Models\Faktor;
 use App\Models\Mental;
+use Yajra\DataTables\DataTables;
 
 class GejalaController extends Controller
 {
@@ -21,6 +22,24 @@ class GejalaController extends Controller
             ]);
         }
         return view('gejala')->with('mental', $mental);
+    }
+
+    public function getData($id)
+    {
+        $gejala = Gejala::join('faktor', 'faktor.id_faktor', '=', 'gejala.id_faktor')->where('faktor.id_mental', $id)->get(['gejala.*', 'faktor.nama AS namaFaktor', 'faktor.id_mental']);
+        return Datatables::of($gejala)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $actionBtn = '<td><button type="button" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
+                             <button type="button" class="btn btn-warning editButton" data-id="'.$row->id_gejala.'"
+                                 data-faktor="'.$row->id_mental.'" data-bs-target="#editGejalaModal" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
+                             <button type="button" class="btn btn-danger deleteButton" data-id="'.$row->id_gejala.'"
+                            data-faktor="'.$row->id_mental.'" data-bs-target="#deleteGejalaModal" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
+                        </td>';
+                    return $actionBtn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
     }
 
     public function save(Request $request)

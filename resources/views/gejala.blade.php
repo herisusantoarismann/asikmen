@@ -29,7 +29,7 @@
             New</button>
     </div>
     <div class="card-body">
-        <table class="table table-hover text-center">
+        <table class="table table-hover text-center gejala{{$m->id_mental}}Table">
             <thead>
                 <tr>
                     <th scope="col">No</th>
@@ -38,7 +38,7 @@
                     <th scope="col">Action</th>
                 </tr>
             </thead>
-            <tbody class="gejalaTable{{$m->id_mental}} gejalaTable">
+            <tbody class="gejala{{$m->id_mental}} gejalaBody">
             </tbody>
         </table>
     </div>
@@ -152,11 +152,15 @@
 </div>
 @endsection
 @section('js')
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-        let faktor;
-        const getData = () => {
-            let dataList = []
+        let faktor = "";
+        const getFaktor = () => {
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -166,44 +170,88 @@
                 dataType: 'json', // added data type
                 success: function(res) {
                     faktor = res.faktor;
-                    for(let i = 1; i <= res.gejala.length; i++){ 
-                        let data = res.gejala.filter((item)=> {
-                            return item.id_mental == i;
-                        })
-                        if(data.length){
-                            dataList.push(data)
-                        }
-                    }
-                    let tableRow;
-                    let table;
-                    dataList.map((item1, index1) => {
-                        $(`.gejalaTable${item1[0].id_mental}`).empty()
-                        table = $(`.gejalaTable${item1[0].id_mental}`);
-                        dataList[index1].map((item2, index2) => {
-                            tableRow = ''
-                            tableRow+='<tr>'
-                            tableRow+=`<th scope="row">${index2+1}</th>`
-                            tableRow+=`<th scope="row">${item2.namaFaktor}</th>`
-                            tableRow+=`<th scope="row" width="30%">${item2.nama}</th>`
-                            tableRow+=`<td><button type="button" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
-                                <button type="button" class="btn btn-warning editButton" data-id="${item2.id_gejala}" data-faktor="${item2.id_mental}"
-                                    data-bs-target="#editGejalaModal" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
-                                <button type="button" class="btn btn-danger deleteButton" data-id="${item2.id_gejala}" data-faktor="${item2.id_mental}"
-                                    data-bs-target="#deleteGejalaModal" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
-                            </td>`
-                            tableRow+='</tr>'
-                            table.append(tableRow)
-                        })
-                        table = ""
-                    })
                 },
                 error:function(res){
                     console.log(res.responseJSON.message)
                 }
             })
         }
+        const getData = () => {
+            // let dataList = []
+            // $.ajax({
+            //     headers: {
+            //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //     },
+            //     url: "/gejala",
+            //     type: 'GET',
+            //     dataType: 'json', // added data type
+            //     success: function(res) {
+            //         faktor = res.faktor;
+            //         for(let i = 1; i <= res.gejala.length; i++){ 
+            //             let data = res.gejala.filter((item)=> {
+            //                 return item.id_mental == i;
+            //             })
+            //             if(data.length){
+            //                 dataList.push(data)
+            //             }
+            //         }
+            //         let tableRow;
+            //         let table;
+            //         dataList.map((item1, index1) => {
+            //             $(`.gejalaTable${item1[0].id_mental}`).empty()
+            //             table = $(`.gejalaTable${item1[0].id_mental}`);
+            //             dataList[index1].map((item2, index2) => {
+            //                 tableRow = ''
+            //                 tableRow+='<tr>'
+            //                 tableRow+=`<th scope="row">${index2+1}</th>`
+            //                 tableRow+=`<th scope="row">${item2.namaFaktor}</th>`
+            //                 tableRow+=`<th scope="row" width="30%">${item2.nama}</th>`
+            //                 tableRow+=`<td><button type="button" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
+            //                     <button type="button" class="btn btn-warning editButton" data-id="${item2.id_gejala}" data-faktor="${item2.id_mental}"
+            //                         data-bs-target="#editGejalaModal" data-bs-toggle="modal"><i class="fa-solid fa-pencil"></i></button>
+            //                     <button type="button" class="btn btn-danger deleteButton" data-id="${item2.id_gejala}" data-faktor="${item2.id_mental}"
+            //                         data-bs-target="#deleteGejalaModal" data-bs-toggle="modal"><i class="fa-solid fa-trash"></i></button>
+            //                 </td>`
+            //                 tableRow+='</tr>'
+            //                 table.append(tableRow)
+            //             })
+            //             table = ""
+            //         })
+            //     },
+            //     error:function(res){
+            //         console.log(res.responseJSON.message)
+            //     }
+            // })
+
+            let count = $('tbody[class*="gejala"');
+            
+            let table;
+            for(let i = 0; i < count.length; i++){ 
+                let id=count[i].className.replace(/\D/g, "" ); 
+                let className=count[i].className.split(" ")
+                table = $('.'+className[0] + 'Table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: " /getgejala" + id, 
+                    columns: [ 
+                        {data: 'DT_RowIndex' , name: 'DT_RowIndex' }, 
+                        {data: 'namaFaktor' ,name: 'namaFaktor' }, 
+                        {data: 'nama' ,name: 'nama' },
+                        { 
+                            data: 'action' , 
+                            name: 'action' , 
+                            orderable: true, 
+                            searchable: true 
+                        }, 
+                    ], 
+                        bDestroy: true, 
+                        dom:'<"d-flex justify-content-between"lf>t<"d-flex justify-content-between"ip>',
+                });
+            }
+        }
 
         getData();
+        getFaktor();
 
         $('.addGejala').click(function(){
             let id = $(this).data('id')
@@ -243,28 +291,28 @@
                 contentType: false,
                 success: function(res) {
                     if(res.status === "Gagal"){
-                        $('.toast-header').addClass('bg-danger')
-                        setTimeout(() => {
-                            $('.toast-title').append(res.status)
-                            $('.toast-text').append(res.message)
-                            $('.toast-header').removeClass('bg-danger')
-                        }, 4000)
+                        // $('.toast-header').addClass('bg-danger')
+                        // setTimeout(() => {
+                        //     $('.toast-title').append(res.status)
+                        //     $('.toast-text').append(res.message)
+                        //     $('.toast-header').removeClass('bg-danger')
+                        // }, 4000)
                     }else{
-                        $('.toast-header').addClass('bg-primary')
-                        $('.toast-title').append(res.status)
-                        $('.toast-text').append(res.message)
-                        var toast = new bootstrap.Toast($('.toast'))
-                        toast.show()
+                        // $('.toast-header').addClass('bg-primary')
+                        // $('.toast-title').append(res.status)
+                        // $('.toast-text').append(res.message)
+                        // var toast = new bootstrap.Toast($('.toast'))
+                        // toast.show()
                         getData()
                         $('#addGejalaModal').modal('toggle')
-                        $('#add_idFaktor').val('')
-                        $('#add_nama').val('')
-                        setTimeout(() => {
-                            toast.hide()
-                            $('.toast-title').text("")
-                            $('.toast-text').text("")
-                            $('.toast-header').removeClass('bg-primary')
-                        }, 4000);
+                        // $('#add_idFaktor').val('')
+                        // $('#add_nama').val('')
+                        // setTimeout(() => {
+                        //     toast.hide()
+                        //     $('.toast-title').text("")
+                        //     $('.toast-text').text("")
+                        //     $('.toast-header').removeClass('bg-primary')
+                        // }, 4000);
                     }
                 },
                 error:function(res){
@@ -273,10 +321,12 @@
             })
         })
 
-        $('.gejalaTable').on('click','.editButton', function(){
+        $('.gejalaBody').on('click','.editButton', function(){
             let id = $(this).data('id');
             let idMental = $(this).data('faktor')
             $('#edit_idGejala').attr('value', id);
+
+            console.log(idMental)
 
             let faktorList = faktor.filter((item) => {
                 return item.id_mental == idMental
@@ -335,28 +385,28 @@
                 contentType: false,
                 success: function(res) {
                     if(res.status === "Gagal"){
-                        $('.toast-header').addClass('bg-danger')
-                        setTimeout(() => {
-                            $('.toast-title').append(res.status)
-                            $('.toast-text').append(res.message)
-                            $('.toast-header').removeClass('bg-danger')
-                        }, 4000)
+                        // $('.toast-header').addClass('bg-danger')
+                        // setTimeout(() => {
+                        //     $('.toast-title').append(res.status)
+                        //     $('.toast-text').append(res.message)
+                        //     $('.toast-header').removeClass('bg-danger')
+                        // }, 4000)
                     }else{
-                        $('.toast-header').addClass('bg-primary')
-                        $('.toast-title').append(res.status)
-                        $('.toast-text').append(res.message)
-                        var toast = new bootstrap.Toast($('.toast'))
-                        toast.show()
+                        // $('.toast-header').addClass('bg-primary')
+                        // $('.toast-title').append(res.status)
+                        // $('.toast-text').append(res.message)
+                        // var toast = new bootstrap.Toast($('.toast'))
+                        // toast.show()
                         getData()
                         $('#editGejalaModal').modal('toggle')
                         $('#add_idFaktor').val('')
                         $('#add_nama').val('')
-                        setTimeout(() => {
-                            toast.hide()
-                            $('.toast-title').text("")
-                            $('.toast-text').text("")
-                            $('.toast-header').removeClass('bg-primary')
-                        }, 4000);
+                        // setTimeout(() => {
+                        //     toast.hide()
+                        //     $('.toast-title').text("")
+                        //     $('.toast-text').text("")
+                        //     $('.toast-header').removeClass('bg-primary')
+                        // }, 4000);
                     }
                 },
                 error:function(res){
@@ -365,7 +415,7 @@
             })
         })
 
-        $('.gejalaTable').on('click', '.deleteButton', function(){
+        $('.gejalaBody').on('click', '.deleteButton', function(){
             let id = $(this).data('id');
             $('#delete_idGejala').attr('value', id);
         })
@@ -389,26 +439,26 @@
                 contentType: false,
                 success: function(res) {
                     if(res.status === "Gagal"){
-                        $('.toast-header').addClass('bg-danger')
-                        setTimeout(() => {
-                            $('.toast-title').append(res.status)
-                            $('.toast-text').append(res.message)
-                            $('.toast-header').removeClass('bg-danger')
-                        }, 4000)
+                        // $('.toast-header').addClass('bg-danger')
+                        // setTimeout(() => {
+                        //     $('.toast-title').append(res.status)
+                        //     $('.toast-text').append(res.message)
+                        //     $('.toast-header').removeClass('bg-danger')
+                        // }, 4000)
                     }else{
-                        $('.toast-header').addClass('bg-primary')
-                        $('.toast-title').append(res.status)
-                        $('.toast-text').append(res.message)
-                        var toast = new bootstrap.Toast($('.toast'))
-                        toast.show()
+                        // $('.toast-header').addClass('bg-primary')
+                        // $('.toast-title').append(res.status)
+                        // $('.toast-text').append(res.message)
+                        // var toast = new bootstrap.Toast($('.toast'))
+                        // toast.show()
                         getData()
                         $('#deleteGejalaModal').modal('toggle')
-                        setTimeout(() => {
-                            toast.hide()
-                            $('.toast-title').text("")
-                            $('.toast-text').text("")
-                            $('.toast-header').removeClass('bg-primary')
-                        }, 4000);
+                        // setTimeout(() => {
+                        //     toast.hide()
+                        //     $('.toast-title').text("")
+                        //     $('.toast-text').text("")
+                        //     $('.toast-header').removeClass('bg-primary')
+                        // }, 4000);
                     }
                 },
                 error:function(res){
