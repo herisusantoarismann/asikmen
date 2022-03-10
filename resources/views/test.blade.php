@@ -5,7 +5,7 @@ Test
 @endsection
 
 @section('content')
-<ul class="steps py-4 stepper">
+<ul class="steps py-4 stepper" data-id="{{ $pertanyaan[0]->id_tes }}">
     @foreach($pertanyaan as $key=>$value)
     <li class="step">
         <div class="step-content">
@@ -87,8 +87,9 @@ Test
         let pertanyaan;
         let jawabanPointer = {};
         let jawaban = {}
+        let id = $('.stepper').data('id')
         $.ajax({
-            url: "/test",
+            url: "/test/"+id,
             type: 'GET',
             dataType: 'json', // added data type
             success: function(res) {
@@ -196,23 +197,27 @@ Test
                 formData.append('id_mental', id_tes)
                 formData.append('jawaban', JSON.stringify(jawaban))
 
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    url: "/test",
-                    type: 'POST',
-                    data: formData,
-                    dataType: 'json', // added data type
-                    processData: false,
-                    contentType: false,
-                    success: function(res) {
-                        console.log(res.jawaban)
-                    },
-                    error:function(res){
-                        console.log(res.responseJSON.message)
-                    }
-                })
+                for (var pair of formData.entries()) {
+                    console.log(pair[0]+ ', ' + pair[1]); 
+                }
+
+                // $.ajax({
+                //     headers: {
+                //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                //     },
+                //     url: "/test",
+                //     type: 'POST',
+                //     data: formData,
+                //     dataType: 'json', // added data type
+                //     processData: false,
+                //     contentType: false,
+                //     success: function(res) {
+                //         console.log(res.jawaban)
+                //     },
+                //     error:function(res){
+                //         console.log(res.responseJSON.message)
+                //     }
+                // })
             }
         })
     })

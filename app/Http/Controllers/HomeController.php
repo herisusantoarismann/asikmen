@@ -22,12 +22,13 @@ class HomeController extends Controller
 
     public function test(Request $request)
     {
-        $pertanyaan = Pertanyaan::where('id_tes', 1)->get();
+        $pertanyaan = Pertanyaan::where('id_tes', $request->route('id'))->get();
         if ($request->ajax()) {
             return response()->json([
                 'pertanyaan' => $pertanyaan
             ]);
         }
+
         return view('test')->with('pertanyaan', $pertanyaan);
     }
 

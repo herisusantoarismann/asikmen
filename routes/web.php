@@ -59,6 +59,6 @@ Route::delete('/gejala{id}', [GejalaController::class,'delete'])->name('deleteGe
 
 Route::get('/home', [HomeController::class,'home'])->name('home');
 Route::get('/about', [HomeController::class,'about'])->name('about');
-Route::get('/test', [HomeController::class, 'test'])->name('test');
+Route::get('/test/{id}', [HomeController::class, 'test'])->name('test');
 Route::post('/test', [HomeController::class, 'saveTest'])->name('saveTest');
 Route::get('/test-result', [HomeController::class, 'testResult'])->name('testResult');
