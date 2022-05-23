@@ -316,7 +316,7 @@
                     }
                 },
                 error:function(res){
-                    console.log(res.responseJSON.message)
+                    console.log(res)
                 }
             })
         })
@@ -325,8 +325,6 @@
             let id = $(this).data('id');
             let idMental = $(this).data('faktor')
             $('#edit_idGejala').attr('value', id);
-
-            console.log(idMental)
 
             let faktorList = faktor.filter((item) => {
                 return item.id_mental == idMental

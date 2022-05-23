@@ -41,6 +41,7 @@ class LoginController extends Controller
     {
         $request->validate([
             'name' => 'required',
+            'level' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:3|max:15|required_with:password_confirmation|same:password_confirmation',
             'password_confirmation' => 'required|min:3|max:15'
@@ -49,7 +50,8 @@ class LoginController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
+            'level' => $request->level
         ]);
         if ($user) {
             Session::flash('success', 'Berhasil Registrasi');

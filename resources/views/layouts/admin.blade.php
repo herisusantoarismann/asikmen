@@ -70,11 +70,11 @@
                 </a>
             </li>
 
-            <!-- Nav Item - About -->
-            <li class="nav-item {{(Route::is('about')) ? 'active' : ''}}">
-                <a class="nav-link">
-                    <i class="fas fa-fw fa-hands-helping"></i>
-                    <span>{{ __('About') }}</span>
+            @if(Auth::user()->level == 1)
+            <li class="nav-item {{(Route::is('user')) ? 'active' : ''}}">
+                <a class="nav-link" href="{{ route('user') }}">
+                    <i class="fas fa-fw fa-solid fa-users"></i>
+                    <span>{{ __('Users') }}</span>
                 </a>
             </li>
 
@@ -92,6 +92,13 @@
                 </a>
             </li>
 
+            <li class="nav-item {{(Route::is('aturan')) ? 'active' : ''}}">
+                <a class="nav-link" href="{{ route('aturan') }}">
+                    <i class="fas fa-fw fa-solid fa-scale-balanced"></i>
+                    <span>{{ __('Aturan') }}</span>
+                </a>
+            </li>
+
             <li class="nav-item {{(Route::is('gejala')) ? 'active' : ''}}">
                 <a class="nav-link" href="{{ route('gejala') }}">
                     <i class="fas fa-fw fa-solid fa-bug"></i>
@@ -105,6 +112,8 @@
                     <span>{{ __('Questions') }}</span>
                 </a>
             </li>
+            @endif
+
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -126,7 +135,7 @@
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
-                    <!-- Sidebar Toggle (Topbar) -->
+                    {{-- <!-- Sidebar Toggle (Topbar) -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
                     </button>
@@ -143,14 +152,14 @@
                                 </button>
                             </div>
                         </div>
-                    </form>
+                    </form> --}}
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
 
                         <!-- Nav Item - Search Dropdown (Visible Only XS) -->
                         <li class="nav-item dropdown no-arrow d-sm-none">
-                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                            {{-- <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-search fa-fw"></i>
                             </a>
@@ -169,12 +178,12 @@
                                         </div>
                                     </div>
                                 </form>
-                            </div>
+                            </div> --}}
                         </li>
 
                         <!-- Nav Item - Alerts -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                            {{-- <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
@@ -220,12 +229,12 @@
                                     </div>
                                 </a>
                                 <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                            </div>
+                            </div> --}}
                         </li>
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
+                            {{-- <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-envelope fa-fw"></i>
                                 <!-- Counter - Messages -->
@@ -286,7 +295,7 @@
                                     </div>
                                 </a>
                                 <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
-                            </div>
+                            </div> --}}
                         </li>
 
                         <div class="topbar-divider d-none d-sm-block"></div>
@@ -377,7 +386,7 @@
                     <a class="btn btn-danger" href="{{ route('logout') }}"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">{{
                         __('Logout') }}</a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    <form id="logout-form" action="{{ route('logout') }}" method="GET" style="display: none;">
                         @csrf
                     </form>
                 </div>

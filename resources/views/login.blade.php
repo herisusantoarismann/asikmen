@@ -10,7 +10,7 @@
 <body>
     <div class="container" style="margin-top:150px;"><br>
         <div class="col-md-4 col-md-offset-4 container">
-            <h2 class="text-center"><b>ASIKMEN</b><br>Aplikasi Cek Mental</h2>
+            <h2 class="text-center"><br>Aplikasi Cek Mental</h2>
             @if(session('success'))
             <div class="alert alert-danger">
                 {{session('success')}}

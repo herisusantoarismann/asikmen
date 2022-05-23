@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Faktor;
 use App\Models\Mental;
+use App\Models\Kategori;
 use Yajra\DataTables\DataTables;
 
 class FaktorController extends Controller
@@ -35,6 +36,17 @@ class FaktorController extends Controller
     public function getData($id)
     {
         $faktor = Faktor::where('id_mental', $id)->get();
+        $i = 0;
+        foreach ($faktor as $f) {
+            $kategori = '';
+            $kategori = Kategori::where('id_mental', $id)->where('id_faktor', $f->id_faktor)->get();
+            $data = [];
+            foreach ($kategori as $k) {
+                array_push($data, " " . $k->nama . ':' . $k->nilai);
+            }
+            $f->kategori = $data;
+            $i++;
+        }
         return Datatables::of($faktor)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
@@ -58,15 +70,16 @@ class FaktorController extends Controller
             'description' => 'required',
         ]);
 
-        $mental = Faktor::create([
+        $faktor = Faktor::create([
             'id_mental' => $request->id_mental,
             'nama' => $request->nama,
             'description' => $request->description,
         ]);
-        if ($mental) {
+        if ($faktor) {
             return response()->json([
                 'status' => 'Berhasil',
-                'message' => 'Faktor Mental berhasil disimpan!'
+                'message' => 'Faktor Mental berhasil disimpan!',
+                'faktor'    => $faktor
             ]);
         } else {
             return response()->json([
@@ -79,11 +92,13 @@ class FaktorController extends Controller
     public function edit($id)
     {
         $faktor = Faktor::where('id_faktor', $id)->first();
+        $kategori = Kategori::where('id_faktor', $id)->get();
         if ($faktor) {
             return response()->json([
                 'status' => 'Berhasil',
                 'message' => 'Faktor berhasil diambil!',
-                'data' => $faktor
+                'data' => $faktor,
+                'kategori'  => $kategori
             ]);
         } else {
             return response()->json([
@@ -108,7 +123,8 @@ class FaktorController extends Controller
         if ($faktor) {
             return response()->json([
                 'status' => 'Berhasil',
-                'message' => 'Faktor berhasil diubah!'
+                'message' => 'Faktor berhasil diubah!',
+                'faktor'    => $request->id_faktor
             ]);
         } else {
             return response()->json([

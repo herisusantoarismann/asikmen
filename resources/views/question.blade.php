@@ -33,6 +33,7 @@
             <thead>
                 <tr>
                     <th scope="col">No</th>
+                    <th scope="col">Faktor</th>
                     <th scope="col">Pertanyaan</th>
                     <th scope="col">Action</th>
                 </tr>
@@ -58,6 +59,13 @@
                 @csrf
                 <div class="modal-body">
                     <input type="hidden" name="id_tes" id="add_idTes">
+                    <div class="form-group">
+                        <label for="namaFaktor">Faktor</label>
+                        <select class="form-select form-control add_idFaktor" id="add_idFaktor"
+                            aria-label="Default select example" name="add_idFaktor">
+
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="exampleFormControlTextarea1">Pertanyaan</label>
                         <textarea class="form-control" id="add_pertanyaan" rows="3" name="pertanyaan"
@@ -87,6 +95,13 @@
                 @csrf
                 <div class="modal-body">
                     <input type="hidden" name="id_pertanyaan" value="1" id="edit_idPertanyaan">
+                    <div class="form-group">
+                        <label for="namaFaktor">Faktor</label>
+                        <select class="form-select form-control edit_idFaktor" id="edit_idFaktor"
+                            aria-label="Default select example" name="edit_idFaktor">
+
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="exampleFormControlTextarea1">Pertanyaan</label>
                         <textarea class="form-control" id="edit_pertanyaan" rows="3" name="pertanyaan"
@@ -187,6 +202,7 @@
                     ajax: " /getquestion" + id, 
                     columns: [ 
                         {data: 'DT_RowIndex' , name: 'DT_RowIndex' },
+                        {data: 'nama' ,name: 'nama' }, 
                         {data: 'pertanyaan' ,name: 'pertanyaan' }, 
                         {data: 'action' , name: 'action' , orderable: true, searchable: true }, 
                     ], 
@@ -196,11 +212,42 @@
             }
         }
 
+        let faktor = "";
+        const getFaktor = () => {
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/question",
+                type: 'GET',
+                dataType: 'json', // added data type
+                success: function(res) {
+                    faktor = res.faktor;
+                },
+                error:function(res){
+                    console.log(res.responseJSON.message)
+                }
+            })
+        }
+
         getData();
+        getFaktor()
 
         $('.addQuestion').click(function(){
             let id = $(this).data('id')
             $('#add_idTes').attr('value', id)
+
+            let faktorList = faktor.filter((item) => {
+                return item.id_mental == id
+            })
+            let option;
+            let select = $('.add_idFaktor');
+            select.empty()
+            faktorList.map((item) => {
+                option+= `<option value="${item.id_faktor}">${item.nama}</option>`
+                select.append(option)
+                option = ''
+            })
         })
 
         $('#addQuestionModal').on('shown.bs.modal', function(){
@@ -212,6 +259,7 @@
 
             let formData = new FormData();
             formData.append('id_tes', $('#add_idTes').val())
+            formData.append('id_faktor', $('#add_idFaktor').val())
             formData.append('pertanyaan', $('#add_pertanyaan').val())
 
             $.ajax({
@@ -238,13 +286,14 @@
                     // }, 4000);
                 },
                 error:function(res){
-                    console.log(res.responseJSON.message)
+                    console.log(res)
                 }
             })
         })
 
         $('.questionBody').on('click','.editButton', function(){
             let id = $(this).data('id');
+            let idMental = $(this).data('faktor')
             $('#edit_idPertanyaan').attr('value', id);
 
             $.ajax({
@@ -261,6 +310,23 @@
                 contentType: false,
                 success: function(res) {
                     $('#edit_pertanyaan').val(res.data.pertanyaan)
+                    let faktorList = faktor.filter((item) => {
+                        return item.id_mental == idMental
+                    })
+                    let option;
+                    let select = $('.edit_idFaktor');
+                    select.empty()
+                    faktorList.map((item) => {
+                        if(item.id_faktor == res.data.id_faktor){
+                            option+= `<option value="${item.id_faktor}" selected>${item.nama}</option>`
+                            select.append(option)
+                            option = ''
+                        }else{
+                            option+= `<option value="${item.id_faktor}">${item.nama}</option>`
+                            select.append(option)
+                            option = ''
+                        }
+                    })
                 },
                 error:function(res){
                     console.log(res.responseJSON.message)
@@ -277,6 +343,7 @@
 
             let formData = new FormData();
             formData.append('id_pertanyaan', $('#edit_idPertanyaan').val())
+            formData.append('id_faktor', $('#edit_idFaktor').val())
             formData.append('pertanyaan', $('#edit_pertanyaan').val())
 
             $.ajax({

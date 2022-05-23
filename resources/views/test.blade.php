@@ -15,7 +15,7 @@ Test
     @endforeach
 </ul>
 <div class="container">
-    <h5 data-id-user="{{ Auth::id() }}" class="test-name">Anxiety Test</h5>
+    <h5 data-id-user="{{ Auth::id() }}" class="test-name"></h5>
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between">
@@ -94,13 +94,16 @@ Test
             dataType: 'json', // added data type
             success: function(res) {
                 pertanyaan = res.pertanyaan;
+                let mental = res.mental;
                 for(let i = 0; i < pertanyaan.length; i++){
-                    jawaban[i] = null;
+                    jawaban[pertanyaan[i].id_pertanyaan] = null;
                 }
                 $('.pertanyaan').append(res.pertanyaan[0].pertanyaan)
                 $('.pertanyaan').attr('data-id', 0);
                 $('.pertanyaan').attr('data-pointer', res.pertanyaan[0].id_pertanyaan);
+                $('.pertanyaan').attr('data-id-faktor', res.pertanyaan[0].id_faktor);
                 $('.test-name').attr('data-id-test', res.pertanyaan[0].id_tes);
+                $('.test-name').append(res.mental.nama)
             }
         });
         $('#prevQuestion').click(function(){
@@ -119,11 +122,15 @@ Test
                 $('.pertanyaan').text(pertanyaan[id].pertanyaan)
                 $('.pertanyaan').attr('data-id', id);
                 $('.pertanyaan').attr('data-pointer', pertanyaan[id].id_pertanyaan);
+                $('.pertanyaan').attr('data-id-faktor', pertanyaan[id].id_faktor);
+                $('.navigationQuestion').css('display', 'flex');
+                $('.submitQuestion').css('display', 'none');
             }
             else{
                 $('.pertanyaan').text(pertanyaan[id].pertanyaan)
                 $('.pertanyaan').attr('data-id', id);
                 $('.pertanyaan').attr('data-pointer', pertanyaan[id].id_pertanyaan);
+                $('.pertanyaan').attr('data-id-faktor', pertanyaan[id].id_faktor);
             }
             $('.stepper li').each(function(index){
                 if(index == id){
@@ -155,11 +162,13 @@ Test
                 $('.pertanyaan').text(pertanyaan[id].pertanyaan)
                 $('.pertanyaan').attr('data-id', id); 
                 $('.pertanyaan').attr('data-pointer', pertanyaan[id].id_pertanyaan); 
+                $('.pertanyaan').attr('data-id-faktor', pertanyaan[id].id_faktor); 
             } 
             else{ 
                 $('.pertanyaan').text(pertanyaan[id].pertanyaan)
                 $('.pertanyaan').attr('data-id', id); 
                 $('.pertanyaan').attr('data-pointer', pertanyaan[id].id_pertanyaan); 
+                $('.pertanyaan').attr('data-id-faktor', pertanyaan[id].id_faktor); 
                 $('.navigationQuestion').css('display', 'none');
                 $('.submitQuestion').css('display', 'flex');
             }
@@ -180,12 +189,13 @@ Test
         $('input[name="jawaban"]').change(function(){
             let id = $('.pertanyaan').attr('data-id');
             let pointer = $('.pertanyaan').attr('data-pointer');
+            let faktor = $('.pertanyaan').attr('data-id-faktor');
             jawabanPointer[id] = $('input[name="jawaban"]:checked').val();
             jawaban[pointer] = $('input[name="jawaban"]:checked').val();
         })
 
         $('.submitQuestion').click(function(){
-            delete jawaban[0]
+            // delete jawaban[0]
             if(Object.keys(jawaban).length < pertanyaan.length){
                 alert("Belum selesai")
             }else{
@@ -197,27 +207,23 @@ Test
                 formData.append('id_mental', id_tes)
                 formData.append('jawaban', JSON.stringify(jawaban))
 
-                for (var pair of formData.entries()) {
-                    console.log(pair[0]+ ', ' + pair[1]); 
-                }
-
-                // $.ajax({
-                //     headers: {
-                //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                //     },
-                //     url: "/test",
-                //     type: 'POST',
-                //     data: formData,
-                //     dataType: 'json', // added data type
-                //     processData: false,
-                //     contentType: false,
-                //     success: function(res) {
-                //         console.log(res.jawaban)
-                //     },
-                //     error:function(res){
-                //         console.log(res.responseJSON.message)
-                //     }
-                // })
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "/test",
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json', // added data type
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        console.log(res.jawaban)
+                    },
+                    error:function(res){
+                        console.log(res.responseJSON.message)
+                    }
+                })
             }
         })
     })

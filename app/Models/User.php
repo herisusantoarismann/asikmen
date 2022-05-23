@@ -44,6 +44,7 @@ class User extends Authenticatable
         'email',
         'email_verified_at',
         'password',
+        'level',
         'remember_token',
         'updated_at',
         'created_at'

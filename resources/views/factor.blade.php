@@ -35,6 +35,7 @@
                     <th scope="col">No</th>
                     <th scope="col">Faktor</th>
                     <th scope="col" width="30%">Description</th>
+                    <th scope="col">Kategori</th>
                     <th scope="col">Action</th>
                 </tr>
             </thead>
@@ -68,6 +69,38 @@
                         <textarea class="form-control" id="add_description" rows="3" name="description"
                             placeholder="Description" required></textarea>
                     </div>
+                    <div class="form-group kategoriField">
+                        <div class="d-flex justify-content-between mb-3">
+                            <label for="exampleFormControlTextarea1">Kategori</label>
+                            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                                <div class="btn-group btn-group-sm me-3" role="group" aria-label="First group">
+                                    <button type="button" class="btn btn-primary minKategori">-</button>
+                                </div>
+                                <div class="btn-group btn-group-sm me-3" role="group" aria-label="First group">
+                                    <button type="button" class="btn btn-light countKategori">2</button>
+                                </div>
+                                <div class="btn-group btn-group-sm" role="group" aria-label="First group">
+                                    <button type="button" class="btn btn-primary plusKategori">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 mx-4 row">
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" placeholder="Nama Kategori" id="add_kategori1">
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" placeholder="Nilai" id="add_nilai1">
+                            </div>
+                        </div>
+                        <div class="mb-3 mx-4 row">
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" placeholder="Nama Kategori" id="add_kategori2">
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" placeholder="Nilai" id="add_nilai2">
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -91,6 +124,7 @@
             <form method="post" id="editFaktorForm">
                 @csrf
                 <div class="modal-body">
+                    <input type="hidden" name="id_mental" value="1" id="edit_idMental">
                     <input type="hidden" name="id_faktor" value="1" id="edit_idFaktor">
                     <div class="form-group">
                         <label for="exampleInputPassword1">Nama</label>
@@ -100,6 +134,12 @@
                         <label for="exampleFormControlTextarea1">Description</label>
                         <textarea class="form-control" id="edit_description" rows="3" name="description"
                             placeholder="Description" required></textarea>
+                    </div>
+                    <div class="form-group editKategoriField">
+                        <div class="d-flex justify-content-between mb-3">
+                            <label for="exampleFormControlTextarea1">Kategori</label>
+                            <span id="edit_count" class="d-hidden"></span>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -154,6 +194,9 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript">
+    function ganti(e){
+        $(`#${e.target.name}`).val(e.target.value)
+    }
     $(document).ready(function(){
         const getData = () => {
             // $.ajax({
@@ -215,6 +258,7 @@
                         {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                         {data: 'nama', name: 'nama'},
                         {data: 'description', name: 'description'},
+                        {data: 'kategori', name:'kategori'},
                         {
                             data: 'action',
                             name: 'action',
@@ -229,6 +273,22 @@
         }
 
         getData();
+
+        $('.minKategori').click(function(){
+            let parent = $('.kategoriField').children();
+            if(parent.length <= 3){ 
+                alert('Minimal Harus 2 Kategori') 
+            }else{ 
+                $('.countKategori').text((parent.length - 1) - 1);
+                parent.last().remove(); 
+            } 
+        })
+
+        $('.plusKategori').click(function(){
+            let count = ($('.kategoriField').children().length + 1) - 1;
+            $('.countKategori').text(count)
+            $('.kategoriField').append('<div class="mb-3 mx-4 row"><div class="col-sm-6"><input type="text" class="form-control" placeholder="Nama Kategori" id="add_kategori'+ count +'"></div><div class="col-sm-6"><input type="text" class="form-control" placeholder="Nilai" id="add_nilai' + count + '"></div></div>')
+        })
 
         $('.addFaktor').click(function(){
             let id = $(this).data('id')
@@ -272,6 +332,56 @@
                         // var toast = new bootstrap.Toast($('.toast'))
                         // toast.show()
                         getData()
+                        for(let i = 1; i <= $('.countKategori').text(); i++){
+                            let formData = new FormData();
+                            formData.append('id_mental', $('#add_idMental').val())
+                            formData.append('id_faktor', res.faktor.id_faktor)
+                            formData.append('nama', $('#add_kategori'+i).val())
+                            formData.append('nilai', $('#add_nilai'+i).val())
+
+                            $.ajax({
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                url: "{{route('postKategori')}}",
+                                type: 'POST',
+                                data: formData,
+                                dataType: 'json',
+                                processData: false,
+                                contentType: false,
+                                success: function(res) {
+                                    if(res.status === "Gagal"){
+                                        // $('.toast-header').addClass('bg-danger')
+                                        // setTimeout(() => {
+                                        // $('.toast-title').append(res.status)
+                                        // $('.toast-text').append(res.message)
+                                        // $('.toast-header').removeClass('bg-danger')
+                                        // }, 4000)
+                                    }else{
+                                        // $('.toast-header').addClass('bg-primary')
+                                        // $('.toast-title').append(res.status)
+                                        // $('.toast-text').append(res.message)
+                                        // var toast = new bootstrap.Toast($('.toast'))
+                                        // toast.show()
+                                        // getData()
+                                        // $('#add_idFaktor').val(res.faktor.id_faktor)
+                                        // $('#addFaktorModal').modal('toggle')
+                                        // setTimeout(() => {
+                                        // toast.hide()
+                                        // }, 4000);
+                                        // if(toast.hide()){
+                                        // $('.toast-title').text("")
+                                        // $('.toast-text').text("")
+                                        // $('.toast-header').removeClass('bg-primary')
+                                        // $('#add_nama').atrr('value', '')
+                                        // }
+                                    }
+                                },
+                                error:function(res){
+                                    console.log(res)
+                                }
+                            })
+                        }
                         $('#addFaktorModal').modal('toggle')
                         // setTimeout(() => {
                         //     toast.hide()
@@ -307,8 +417,14 @@
                 processData: false,
                 contentType: false,
                 success: function(res) {
+                    $('#edit_idMental').val(res.data.id_mental)
                     $('#edit_nama').val(res.data.nama)
                     $('#edit_description').val(res.data.description)
+                    $('#edit_count').text(res.kategori.length)
+                    $('.editKategoriField').children().not(':first-child').remove()
+                    for(let i = 0; i < res.kategori.length; i++){
+                        $('.editKategoriField').append('<div class="mb-3 mx-4 row"><div class="col-sm-6"><input type="text" class="form-control" onchange="ganti(event)" name="edit_kategori' + (i+1) + '" data-id="' + res.kategori[i].id_kategori + '" id="edit_kategori'+ (i+1) +'" value="' + res.kategori[i].nama + '"></div><div class="col-sm-6"><input type="text" class="form-control" onchange="ganti(event)" name="edit_nilai' + (i+1) + '" id="edit_nilai' + (i+1) + '" value="' + res.kategori[i].nilai.toString() + '"></div></div>')
+                    }
                 },
                 error:function(res){
                     console.log(res.responseJSON.message)
@@ -318,6 +434,7 @@
 
         $('#editFaktorModal').on('shown.bs.modal', function(){
             $(this).find('#edit_nama').focus()
+            console.log($('#edit_kategori1').val("HEri"))
         })
 
         $('#editFaktorForm').on('submit',function(e){
@@ -353,6 +470,56 @@
                         // var toast = new bootstrap.Toast($('.toast'))
                         // toast.show()
                         getData()
+                        for(let i = 1; i <= $('#edit_count').text(); i++){ 
+                            let formData=new FormData(); 
+                            formData.append('id_kategori', $('#edit_kategori'+i).data('id')) 
+                            formData.append('id_mental', $('#edit_idMental').val()) 
+                            formData.append('id_faktor', res.faktor) 
+                            formData.append('nama', $('#edit_kategori'+i).val()) 
+                            formData.append('nilai', $('#edit_nilai'+i).val()) 
+                            
+                            $.ajax({ 
+                                headers: { 
+                                    'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content') 
+                                }, 
+                                url: "{{route('updateKategori')}}" , 
+                                type: 'POST' , 
+                                data: formData, 
+                                dataType: 'json' ,
+                                processData: false, 
+                                contentType: false, 
+                                success: function(res) { 
+                                    if(res.status==="Gagal" ){ 
+                                    //$('.toast-header').addClass('bg-danger') // setTimeout(()=> {
+                                    // $('.toast-title').append(res.status)
+                                    // $('.toast-text').append(res.message)
+                                    // $('.toast-header').removeClass('bg-danger')
+                                    // }, 4000)
+                                    }else{
+                                    // $('.toast-header').addClass('bg-primary')
+                                    // $('.toast-title').append(res.status)
+                                    // $('.toast-text').append(res.message)
+                                    // var toast = new bootstrap.Toast($('.toast'))
+                                    // toast.show()
+                                    // getData()
+                                    // $('#add_idFaktor').val(res.faktor.id_faktor)
+                                    // $('#addFaktorModal').modal('toggle')
+                                    // setTimeout(() => {
+                                    // toast.hide()
+                                    // }, 4000);
+                                    // if(toast.hide()){
+                                    // $('.toast-title').text("")
+                                    // $('.toast-text').text("")
+                                    // $('.toast-header').removeClass('bg-primary')
+                                    // $('#add_nama').atrr('value', '')
+                                    // }
+                                    }
+                                },
+                                error:function(res){
+                                    console.log(res)
+                                }
+                            })
+                        }
                         $('#editFaktorModal').modal('toggle')
                         // setTimeout(() => {
                         //     toast.hide()
@@ -416,6 +583,45 @@
                         //     $('.toast-text').text("")
                         //     $('.toast-header').removeClass('bg-primary')
                         // }
+                    }
+                },
+                error:function(res){
+                    console.log(res.responseJSON)
+                }
+            })
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/kategori"+id,
+                type: 'DELETE',
+                data: formData,
+                dataType: 'json', // added data type
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    if(res.status === "Gagal"){
+                    // $('.toast-header').addClass('bg-danger')
+                    // setTimeout(() => {
+                    // $('.toast-title').append(res.status)
+                    // $('.toast-text').append(res.message)
+                    // $('.toast-header').removeClass('bg-danger')
+                    // }, 4000)
+                    }else{
+                    // $('.toast-header').addClass('bg-primary')
+                    // $('.toast-title').append(res.status)
+                    // $('.toast-text').append(res.message)
+                    // var toast = new bootstrap.Toast($('.toast'))
+                    // toast.show()
+                    // setTimeout(() => {
+                    // toast.hide()
+                    // }, 4000);
+                    // if(toast.hide()){
+                    // $('.toast-title').text("")
+                    // $('.toast-text').text("")
+                    // $('.toast-header').removeClass('bg-primary')
+                    // }
                     }
                 },
                 error:function(res){

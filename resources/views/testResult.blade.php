@@ -6,20 +6,18 @@ Test Result
 
 @section('content')
 <div class="container py-4">
-    <h2 class="text-center">Test Result</h2>
+    <h2 class="text-center title-page" data-id="{{$data['id']}}">Test Result</h2>
     <div class="d-flex justify-content-between">
         <div style="flex:1; padding-right:50px;">
             <img src="/img/stress.jpg" alt="" style="width:600px;height:400px;">
         </div>
         <div style="flex:1;" class="d-flex justify-content-center flex-column">
             <div class="level">
-                <h5 class="text-">Anxiety Level : Medium</h5>
+                <h5 class="text-">{{$data['name']}} Level : {{ $data['hasil'] }} </h5>
             </div>
             <div class="solution d-flex flex-column">
-                <span>&#9642; Think Postivity</span>
-                <span>&#9642; Calm the Mind and Relax</span>
-                <span>&#9642; Do activities according to interest</span>
-                <span>&#9642; Doing a useful hobby</span>
+                @for($i = 0; $i < count($data['solusi']); $i++) <span>&#9642; {{$data['solusi'][$i]}}</span>
+                    @endfor
             </div>
         </div>
     </div>
@@ -31,4 +29,23 @@ Test Result
         <?php echo date('Y'); ?>, Heri Susanto Arisman
     </p>
 </div>
+@endsection
+@section('jsTes')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        let id = $('.title-page').data('id')
+
+        $.ajax({
+            url: "/test-result/"+id,
+            type: 'GET',
+            dataType: 'json', // added data type
+            success: function(res) {
+                console.log(res)
+            } 
+        });
+    })
+    
+</script>
 @endsection

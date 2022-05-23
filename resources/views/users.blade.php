@@ -22,17 +22,18 @@
 
 <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">Mental Illness List</h6>
-        <button type="button" class="btn btn-primary" data-bs-target="#addMentalModal" data-bs-toggle="modal">Add
+        <h6 class="m-0 font-weight-bold text-primary">Users List</h6>
+        <button type="button" class="btn btn-primary" data-bs-target="#addUsersModal" data-bs-toggle="modal">Add
             New</button>
     </div>
     <div class="card-body">
-        <table class="table table-hover mentalTable">
+        <table class="table table-hover usersTable">
             <thead class="text-center">
                 <tr>
                     <th scope="col">No</th>
-                    <th scope="col">Mental</th>
-                    <th scope="col" style="width:50%;">Description</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Role</th>
                     <th scope="col">Action</th>
                 </tr>
             </thead>
@@ -42,17 +43,17 @@
     </div>
 </div>
 <!-- Add Mental Modal -->
-<div class="modal fade" id="addMentalModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+<div class="modal fade" id="addUsersModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Add Mental</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">Add User</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="post" id="addMental">
+            <form method="post" id="addUser">
                 @csrf
                 <div class="modal-body">
                     <div class="form-group">
@@ -60,9 +61,26 @@
                         <input type="text" class="form-control" id="add_nama" placeholder="Nama" nama="nama" required>
                     </div>
                     <div class="form-group">
-                        <label for="exampleFormControlTextarea1">Description</label>
-                        <textarea class="form-control" id="add_description" rows="3" name="description"
-                            required></textarea>
+                        <label for="namaFaktor">Level</label>
+                        <select class="form-select form-control" aria-label="Default select example" id="add_level">
+                            <option value="0">User</option>
+                            <option value="1">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Email</label>
+                        <input type="email" class="form-control" id="add_email" placeholder="Email" nama="email"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Password</label>
+                        <input type="password" class="form-control" id="add_password" placeholder="Password"
+                            nama="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Password Confirmation</label>
+                        <input type="password" class="form-control" id="add_passwordConfirmation" placeholder="Password"
+                            nama="password_confirmation" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -74,28 +92,35 @@
     </div>
 </div>
 <!-- Edit Mental Modal -->
-<div class="modal fade" id="editMentalModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Edit Mental</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">Edit User</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="post" id="editMentalForm">
+            <form method="post" id="editUserForm">
                 @csrf
                 <div class="modal-body">
-                    <input type="hidden" name="id_mental" value="1" id="edit_idMental">
+                    <input type="hidden" name="id_user" id="edit_idUser">
                     <div class="form-group">
                         <label for="exampleInputPassword1">Nama</label>
                         <input type="text" class="form-control" id="edit_nama" placeholder="Nama" nama="nama" required>
                     </div>
                     <div class="form-group">
-                        <label for="exampleFormControlTextarea1">Description</label>
-                        <textarea class="form-control" id="edit_description" rows="3" name="description"
-                            placeholder="Description" required></textarea>
+                        <label for="exampleInputPassword1">Email</label>
+                        <input type="email" class="form-control" id="edit_email" placeholder="Email" nama="email"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="namaFaktor">Level</label>
+                        <select class="form-select form-control" aria-label="Default select example" id="edit_level">
+                            <option value="0">User</option>
+                            <option value="1">Admin</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -107,22 +132,22 @@
     </div>
 </div>
 <!-- Delete Mental Modal -->
-<div class="modal fade" id="deleteMentalModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+<div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Delete Mental</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">Delete User</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="post" id="deleteMentalForm">
+            <form method="post" id="deleteUserForm">
                 @csrf
                 <div class="modal-body">
                     <p>Are you sure?</p>
                 </div>
-                <input type="hidden" id="delete_idMental" name="id_pertanyaan">
+                <input type="hidden" id="delete_idUser" name="id_user">
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-danger">Delete</button>
@@ -181,19 +206,24 @@
             //     }
             // })
 
-            var table = $('.mentalTable').DataTable({
+            var table = $('.usersTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "/mental",
+                ajax: "/users",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'nama', name: 'nama'},
-                    {data: 'description', name: 'description'},
+                    {data: 'name', name: 'name'},
+                    {data: 'email', name: 'email'},
+                    {data: 'level', name: 'level', "render":function(data){
+                        if(data == 0){
+                            return 'User'
+                        }else{
+                            return 'Admin'
+                        }
+                    }},
                     {
                         data: 'action',
                         name: 'action',
-                        orderable: true,
-                        searchable: true
                     },
                 ],
                 bDestroy: true,
@@ -203,22 +233,25 @@
 
         getData();
 
-        $('#addMental').on('shown.bs.modal', function(){
+        $('#addUser').on('shown.bs.modal', function(){
             $(this).find('#add_nama').focus()
         })
 
-        $('#addMental').on('submit',function(e){
+        $('#addUser').on('submit',function(e){
             e.preventDefault();
 
             let formData = new FormData();
-            formData.append('nama', $('#add_nama').val())
-            formData.append('description', $('#add_description').val())
+            formData.append('name', $('#add_nama').val())
+            formData.append('level', $('#add_level').val())
+            formData.append('email', $('#add_email').val())
+            formData.append('password', $('#add_password').val())
+            formData.append('password_confirmation', $('#add_passwordConfirmation').val())
 
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                url: "/mental",
+                url: "/users",
                 type: 'POST',
                 data: formData,
                 dataType: 'json', // added data type
@@ -230,7 +263,7 @@
                     // var toast = new bootstrap.Toast($('.toast'))
                     // toast.show()
                     getData()
-                    $('#addMentalModal').modal('toggle')
+                    $('#addUsersModal').modal('toggle')
                     // setTimeout(() => {
                     //     toast.hide()
                     //     $('.toast-title').text("")
@@ -243,25 +276,26 @@
             })
         })
 
-        $('.mentalTable').on('click','.editButton', function(){
+        $('.usersTable').on('click','.editButton', function(){
             let id = $(this).data('id');
-            $('#edit_idMental').attr('value', id);
+            $('#edit_idUser').attr('value', id);
 
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                url: "/editmental"+id,
+                url: "/edituser"+id,
                 type: 'POST',
                 data: {
-                    'id_mental':id
+                    'id':id
                 },
                 dataType: 'json', // added data type
                 processData: false,
                 contentType: false,
                 success: function(res) {
-                    $('#edit_nama').val(res.data.nama)
-                    $('#edit_description').val(res.data.description)
+                    $('#edit_nama').val(res.data.name)
+                    $('#edit_email').val(res.data.email)
+                    $('#edit_level').val(res.data.level).change()
                 },
                 error:function(res){
                     console.log(res.responseJSON.message)
@@ -269,23 +303,24 @@
             })
         })
 
-        $('#editMentalModal').on('shown.bs.modal', function(){
+        $('#editUserModal').on('shown.bs.modal', function(){
             $(this).find('#edit_nama').focus()
         })
 
-        $('#editMentalForm').on('submit',function(e){
+        $('#editUserForm').on('submit',function(e){
             e.preventDefault();
 
             let formData = new FormData();
-            formData.append('id_mental', $('#edit_idMental').val())
-            formData.append('nama', $('#edit_nama').val())
-            formData.append('description', $('#edit_description').val())
+            formData.append('id', $('#edit_idUser').val())
+            formData.append('name', $('#edit_nama').val())
+            formData.append('email', $('#edit_email').val())
+            formData.append('level', $('#edit_level').val())
 
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                url: "/updatemental",
+                url: "/updateuser",
                 type: 'POST',
                 data: formData,
                 dataType: 'json', // added data type
@@ -297,7 +332,7 @@
                     // var toast = new bootstrap.Toast($('.toast'))
                     // toast.show()
                     getData()
-                    $('#editMentalModal').modal('toggle')
+                    $('#editUserModal').modal('toggle')
                     // setTimeout(() => {
                     //     toast.hide()
                     //     $('.toast-title').text("")
@@ -305,28 +340,28 @@
                     // }, 4000);
                 },
                 error:function(res){
-                    console.log(res.responseJSON.message)
+                    console.log(res)
                 }
             })
         })
 
-        $('.mentalTable').on('click', '.deleteButton', function(){
+        $('.usersTable').on('click', '.deleteButton', function(){
             let id = $(this).data('id');
-            $('#delete_idMental').attr('value', id);
+            $('#delete_idUser').attr('value', id);
         })
 
-        $('#deleteMentalForm').on('submit',function(e){
+        $('#deleteUserForm').on('submit',function(e){
             e.preventDefault();
 
             let formData = new FormData();
-            let id = $('#delete_idMental').val()
-            formData.append('id_mental', id)
+            let id = $('#delete_idUser').val()
+            formData.append('id', id)
 
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                url: "/mental"+id,
+                url: "/user"+id,
                 type: 'DELETE',
                 data: formData,
                 dataType: 'json', // added data type
@@ -347,7 +382,7 @@
                         // var toast = new bootstrap.Toast($('.toast'))
                         // toast.show()
                         getData()
-                        $('#deleteMentalModal').modal('toggle')
+                        $('#deleteUserModal').modal('toggle')
                         // setTimeout(() => {
                         //     toast.hide()
                         //     $('.toast-title').text("")
