@@ -20,11 +20,7 @@ About
             Semua orang pasti pernah merasa sedih atau murung. Seseorang dinyatakan mengalami depresi jika sudah 2
             minggu merasa
             sedih, putus harapan, atau tidak berharga.</span>
-        <span>&#9642; Depresi adalah gangguan suasana hati (mood) yang ditandai dengan perasaan sedih yang mendalam dan
-            rasa tidak peduli.
-            Semua orang pasti pernah merasa sedih atau murung. Seseorang dinyatakan mengalami depresi jika sudah 2
-            minggu merasa
-            sedih, putus harapan, atau tidak berharga.</span>
+        <span>&#9642; Gangguan somatoform merupakan kelainan psikologis pada seseorang yang ditandai dengan sekumpulan keluhan fisik yang tidak menentu, namun tidak tampak saat pemeriksaan fisik. Munculnya gangguan ini biasanya disebabkan oleh stres dan banyak pikiran.</span>
     </div>
     <div class="d-flex justify-content-center py-2">
         <button type="button" class="btn btn-primary">Coba Tes</button>
