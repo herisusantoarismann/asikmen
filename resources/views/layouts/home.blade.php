@@ -43,8 +43,8 @@
                                 {{Auth::user()->name}}
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="#">Profile</a></li>
-                                <li><a class="dropdown-item" href="/home">Dashboard</a></li>
+                                <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                                <li><a class="dropdown-item" href="/dashboard">Dashboard</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
