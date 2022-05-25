@@ -23,7 +23,7 @@ Home
                 <img class="card-img-top" src="/img/stress.jpg" alt="Card image cap">
                 <h5 class="card-title">Anxiety Test</h5>
                 <p class="card-text">To check the level of anxiety and the best solution.</p>
-                <a href="<?php base_url('/test/1') ?>" class="btn btn-primary">Try it.</a>
+                <a href="{{ route('test', 1)}}" class="btn btn-primary">Try it.</a>
             </div>
         </div>
         <div class="card" style="width: 18rem;">
@@ -31,7 +31,7 @@ Home
                 <img class="card-img-top" src="/img/depression.jpg" alt="Card image cap">
                 <h5 class="card-title">Depression Test</h5>
                 <p class="card-text">To check the level of depression and the best solution.</p>
-                <a href="#" class="btn btn-primary">Try it.</a>
+                <a href="{{ route('test', 2) }}" class="btn btn-primary">Try it.</a>
             </div>
         </div>
         <div class="card" style="width: 18rem;">
@@ -39,7 +39,7 @@ Home
                 <img class="card-img-top" src="/img/somatoform.jpg" alt="Card image cap">
                 <h5 class="card-title">Somatoform Test</h5>
                 <p class="card-text">To check the level of somatoform and the best solution.</p>
-                <a href="#" class="btn btn-primary">Try it.</a>
+                <a href="{{ route('test',3) }}" class="btn btn-primary">Try it.</a>
             </div>
         </div>
     </div>
