@@ -12,10 +12,10 @@ Home
         style="padding: 0 70px;">
         <h1>There is a crack in everything,</h1>
         <h3>That’s how the light gets in.</h3>
-        <button type="button" class="btn btn-primary w-25">Our Services</button>
+        <button type="button" class="btn btn-primary w-25" id="tes">Our Services</button>
     </div>
 </div>
-<div class="container py-4">
+<div class="container py-4" id="services">
     <h1 class="text-center">Our Services</h1>
     <div class="d-flex justify-content-between py-4">
         <div class="card" style="width: 18rem;">
@@ -23,7 +23,7 @@ Home
                 <img class="card-img-top" src="/img/stress.jpg" alt="Card image cap">
                 <h5 class="card-title">Anxiety Test</h5>
                 <p class="card-text">To check the level of anxiety and the best solution.</p>
-                <a href="#" class="btn btn-primary">Try it.</a>
+                <a href="<?php base_url('/test/1') ?>" class="btn btn-primary">Try it.</a>
             </div>
         </div>
         <div class="card" style="width: 18rem;">
@@ -70,4 +70,17 @@ Home
     </p>
 </div>
 
+@endsection
+@section('jsTes')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    $(document).ready(function (){
+        $("#tes").click(function (){
+            $('html, body').animate({
+                scrollTop: $("#services").offset().top
+            }, 150);
+        });
+    });
+</script>
 @endsection
