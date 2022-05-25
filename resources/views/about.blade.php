@@ -23,7 +23,7 @@ About
         <span>&#9642; Gangguan somatoform merupakan kelainan psikologis pada seseorang yang ditandai dengan sekumpulan keluhan fisik yang tidak menentu, namun tidak tampak saat pemeriksaan fisik. Munculnya gangguan ini biasanya disebabkan oleh stres dan banyak pikiran.</span>
     </div>
     <div class="d-flex justify-content-center py-2">
-        <button type="button" class="btn btn-primary">Coba Tes</button>
+        <a href="{{ route('home') }}#services"><button type="button" class="btn btn-primary">Coba Tes</button></a>
     </div>
 </div>
 @endsection
