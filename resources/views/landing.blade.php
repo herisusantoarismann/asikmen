@@ -58,7 +58,7 @@ Home
                 <p class="card-text">Contact Asoka Consulting which is a consultant engaged in psychology, especially
                     mental health based in Yogyakarta and
                     Serang.</p>
-                <a href="#" class="btn btn-primary">Visit.</a>
+                <a href="https://asokaconsulting.co.id/" class="btn btn-primary" target="_blank">Visit.</a>
             </div>
         </div>
     </div>
