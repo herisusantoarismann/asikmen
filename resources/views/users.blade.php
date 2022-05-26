@@ -58,7 +58,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="exampleInputPassword1">Nama</label>
-                        <input type="text" class="form-control" id="add_nama" placeholder="Nama" nama="nama" required>
+                        <input type="text" class="form-control" id="add_nama" placeholder="Nama" nama="nama" >
                     </div>
                     <div class="form-group">
                         <label for="namaFaktor">Level</label>
@@ -70,17 +70,17 @@
                     <div class="form-group">
                         <label for="exampleInputPassword1">Email</label>
                         <input type="email" class="form-control" id="add_email" placeholder="Email" nama="email"
-                            required>
+                            >
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword1">Password</label>
                         <input type="password" class="form-control" id="add_password" placeholder="Password"
-                            nama="password" required>
+                            nama="password" >
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword1">Password Confirmation</label>
                         <input type="password" class="form-control" id="add_passwordConfirmation" placeholder="Password"
-                            nama="password_confirmation" required>
+                            nama="password_confirmation" >
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -258,6 +258,7 @@
                 processData: false,
                 contentType: false,
                 success: function(res) {
+                    if($.isEmptyObject(data.error))
                     if(res.status == "Gagal"){
                         $('.toast-header').addClass('bg-danger')
                         $('.toast-title').append(res.status)
@@ -278,15 +279,25 @@
                         getData()
                         $('#addUsersModal').modal('toggle')
                         setTimeout(() => {
-                            toast.hide()
-                            $('.toast-title').text("")
-                            $('.toast-text').text("")
+                            $('.toast').toast('hide')
+                            $('.toast-title').empty()
+                            $('.toast-text').empty()
                             $('.toast-header').removeClass('bg-primary')
                         }, 4000);
                     }
                 },
                 error:function(res){
-                    console.log(res.responseJSON.message)
+                    $('.toast-title').append("Error")
+                    $('.toast-text').append("Mohon masukkan data dengan benar!")
+                    $('.toast-header').addClass('bg-danger')
+                    var toast = new bootstrap.Toast($('.toast'))
+                    $('.toast').toast('show')
+                    setTimeout(() => {
+                        $('.toast').toast('hide')
+                        $('.toast-title').empty()
+                        $('.toast-text').empty()
+                        $('.toast-header').removeClass('bg-danger')
+                    }, 4000)
                 }
             })
         })
@@ -362,9 +373,9 @@
                         getData()
                         $('#editUserModal').modal('toggle')
                         setTimeout(() => {
-                            toast.hide()
-                            $('.toast-title').append("")
-                            $('.toast-text').append("")
+                            $('.toast').toast('hide')
+                            $('.toast-title').empty()
+                            $('.toast-text').empty()
                             $('.toast-header').removeClass('bg-danger')
                         }, 4000)
                     }
@@ -418,9 +429,9 @@
                         getData()
                         $('#deleteUserModal').modal('toggle')
                         setTimeout(() => {
-                            toast.hide()
-                            $('.toast-title').text("")
-                            $('.toast-text').text("")
+                            $('.toast').toast('hide')
+                            $('.toast-title').empty()
+                            $('.toast-text').empty()
                             $('.toast-header').removeClass('bg-primary')
                         }, 4000);
                     }
