@@ -46,13 +46,23 @@ class LoginController extends Controller
 
     public function save(Request $request)
     {
-        $request->validate([
+        $message = [
+            'required'  => ':attribute tidak diisi!',
+            'email'     => 'Format email salah!',
+            'min'       => ':attribute harus diisi minimal :min karakter!',
+            'max'       => ':attribute harus diisi maksimal :max karakter!',
+            'unique'    => ':attribute telah terdaftar!',
+            'required_with' => 'Password yang dimasukkan tidak cocok!',
+            'same'      => 'Password yang dimasukkan tidak cocok!'
+        ];
+
+        $this->validate($request, [
             'name' => 'required',
             'level' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:3|max:15|required_with:password_confirmation|same:password_confirmation',
             'password_confirmation' => 'required|min:3|max:15'
-        ]);
+        ], $message);
 
         $user = User::create([
             'name' => $request->name,
@@ -64,7 +74,7 @@ class LoginController extends Controller
             Session::flash('success', 'Berhasil Registrasi');
             return redirect('/');
         } else {
-            Session::flash('error', 'Email atau Password Salah');
+            Session::flash('error', 'Gagal Registrasi');
             return redirect('/register');
         };
     }

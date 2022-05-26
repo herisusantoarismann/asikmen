@@ -25,24 +25,33 @@
                 <b>Opps!</b> {{session('error')}}
             </div>
             @endif
+             @if(count($errors) > 0)
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <div class="card">
                 <div class="card-body">
-                    <form id="postRegister">
+                    <form action="{{ route('postRegister') }}" method="post">
                         @csrf
                         <div class="form-group">
                             <label>Email</label>
-                            <input type="email" name="email" class="form-control" placeholder="Email" required=""
+                            <input type="email" name="email" class="form-control" placeholder="Email"
                                 id="add_email">
                         </div>
                         <div class="form-group">
                             <label>Password</label>
                             <input type="password" name="password" class="form-control" placeholder="Password"
-                                required="" id="add_password">
+                                 id="add_password">
                         </div>
                         <div class="form-group">
                             <label>Password Confirmation</label>
                             <input type="password" name="password_confirmation" class="form-control"
-                                placeholder="Password" required="" id="add_passwordConfirmation">
+                                placeholder="Password"  id="add_passwordConfirmation">
                         </div>
                         <button type="submit" class="btn btn-primary btn-block">Register</button>
                     </form>
@@ -64,33 +73,6 @@
     </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
-    </script>
-    <script type="text/javascript">
-        $('#postRegister').on('submit',function(e){
-            e.preventDefault();
-
-            let formData = new FormData();
-            formData.append('level', 0)
-            formData.append('name', 'User')
-            formData.append('email', $('#add_email').val())
-            formData.append('password', $('#add_password').val())
-            formData.append('password_confirmation', $('#add_passwordConfirmation').val())
-            
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: "/postRegister",
-                type: 'POST',
-                data: formData,
-                dataType: 'json', // added data type
-                processData: false,
-                contentType: false,
-                success:function(){
-                    window.location ='http://localhost:8000/'
-                }
-            })
-        })
     </script>
 </body>
 
