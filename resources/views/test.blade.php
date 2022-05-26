@@ -70,6 +70,17 @@ Test
         </div>
     </div>
 </div>
+<div style="z-index: 50; position: absolute; top:50%; left:50%; transform:translate(-50%, -50%); padding:10px;">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header text-white bg-danger
+        ">
+            <strong class="me-auto toast-title">Error</strong>
+        </div>
+        <div class="toast-body toast-text">
+            <p>Pertanyaan belum diisi semua!</p>
+        </div>
+    </div>
+</div>
 
 @endsection
 @section('footer')
@@ -196,8 +207,11 @@ Test
 
         $('.submitQuestion').click(function(){
             // delete jawaban[0]
-            if(Object.keys(jawaban).length < pertanyaan.length){
-                alert("Belum selesai")
+            if(Object.values(jawaban).indexOf(null) >= 0){
+                $('.toast').toast('show')
+                setTimeout(() => {
+                    $('.toast').toast('hide')
+                }, 4000);
             }else{
                 let id_user = $('.test-name').attr('data-id-user');
                 let id_tes = $('.test-name').attr('data-id-test');
