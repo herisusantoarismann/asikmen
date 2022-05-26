@@ -381,7 +381,17 @@
                     }
                 },
                 error:function(res){
-                    console.log(res)
+                    $('.toast-title').append("Error")
+                    $('.toast-text').append("Mohon masukkan data dengan benar!")
+                    $('.toast-header').addClass('bg-danger')
+                    var toast = new bootstrap.Toast($('.toast'))
+                    $('.toast').toast('show')
+                    setTimeout(() => {
+                        $('.toast').toast('hide')
+                        $('.toast-title').empty()
+                        $('.toast-text').empty()
+                        $('.toast-header').removeClass('bg-danger')
+                    }, 4000)
                 }
             })
         })
@@ -437,7 +447,17 @@
                     }
                 },
                 error:function(res){
-                    console.log(res.responseJSON.message)
+                    $('.toast-title').append("Error")
+                    $('.toast-text').append("Error!")
+                    $('.toast-header').addClass('bg-danger')
+                    var toast = new bootstrap.Toast($('.toast'))
+                    $('.toast').toast('show')
+                    setTimeout(() => {
+                        $('.toast').toast('hide')
+                        $('.toast-title').empty()
+                        $('.toast-text').empty()
+                        $('.toast-header').removeClass('bg-danger')
+                    }, 4000)
                 }
             })
         })
