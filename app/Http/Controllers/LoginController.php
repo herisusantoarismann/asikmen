@@ -23,10 +23,17 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
+        $message = [
+            'required'  => ':attribute tidak diisi!',
+            'email'     => 'Format email salah!',
+            'min'       => ':attribute harus diisi minimal :min karakter!',
+            'max'       => ':attribute harus diisi maksimal :max karakter!',
+        ];
+        
+        $this->validate($request, [
             'email' => 'required|email',
             'password' => 'required|min:3|max:15'
-        ]);
+        ], $message);
 
         $user = User::where('email', $request->email)->first();
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
