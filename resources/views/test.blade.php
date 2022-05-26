@@ -231,11 +231,11 @@ Test
                     dataType: 'json', // added data type
                     processData: false,
                     contentType: false,
-                    success: function(res) {
-                        console.log(res.jawaban)
+                    success:function(res){
+                        window.location.href = res.view
                     },
                     error:function(res){
-                        console.log(res.responseJSON.message)
+                        console.log(res)
                     }
                 })
             }

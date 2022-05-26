@@ -135,7 +135,7 @@ class HomeController extends Controller
             return response()->json([
                 'status' => 'Berhasil',
                 'message' => 'Jawaban berhasil disimpan!',
-                'jawaban' => $jawaban->jawaban
+                'view' => route('testResult', $jawaban->id_jawaban)
             ]);
         } else {
             return response()->json([
