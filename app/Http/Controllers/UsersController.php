@@ -36,6 +36,7 @@ class UsersController extends Controller
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
+            'level' => 'required',
             'password' => 'required|min:3|max:15|required_with:password_confirmation|same:password_confirmation',
             'password_confirmation' => 'required|min:3|max:15'
         ]);
@@ -43,12 +44,13 @@ class UsersController extends Controller
         $users = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'level' => $request->level,
             'password' => Hash::make($request->password)
         ]);
         if ($users) {
             return response()->json([
                 'status' => 'Berhasil',
-                'message' => 'User berhasil disimpan!'
+                'message' => 'User berhasil disimpan!',
             ]);
         } else {
             return response()->json([
@@ -70,7 +72,7 @@ class UsersController extends Controller
         } else {
             return response()->json([
                 'status' => 'Gagal',
-                'message' => 'Penyakit Mental gagal diambil!'
+                'message' => 'User gagal diambil!'
             ]);
         }
     }

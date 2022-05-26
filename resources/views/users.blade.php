@@ -258,17 +258,32 @@
                 processData: false,
                 contentType: false,
                 success: function(res) {
-                    // $('.toast-title').append(res.status)
-                    // $('.toast-text').append(res.message)
-                    // var toast = new bootstrap.Toast($('.toast'))
-                    // toast.show()
-                    getData()
-                    $('#addUsersModal').modal('toggle')
-                    // setTimeout(() => {
-                    //     toast.hide()
-                    //     $('.toast-title').text("")
-                    //     $('.toast-text').text("")
-                    // }, 4000);
+                    if(res.status == "Gagal"){
+                        $('.toast-header').addClass('bg-danger')
+                        $('.toast-title').append(res.status)
+                        $('.toast-text').append(res.message)
+                        var toast = new bootstrap.Toast($('.toast'))
+                        $('.toast').toast('show')
+                        setTimeout(() => {
+                            $('.toast-title').append("")
+                            $('.toast-text').append("")
+                            $('.toast-header').removeClass('bg-danger')
+                        }, 4000)
+                    }else{
+                        $('.toast-header').addClass('bg-primary')
+                        $('.toast-title').append(res.status)
+                        $('.toast-text').append(res.message)
+                        var toast = new bootstrap.Toast($('.toast'))
+                        $('.toast').toast('show')
+                        getData()
+                        $('#addUsersModal').modal('toggle')
+                        setTimeout(() => {
+                            toast.hide()
+                            $('.toast-title').text("")
+                            $('.toast-text').text("")
+                            $('.toast-header').removeClass('bg-primary')
+                        }, 4000);
+                    }
                 },
                 error:function(res){
                     console.log(res.responseJSON.message)
@@ -327,17 +342,32 @@
                 processData: false,
                 contentType: false,
                 success: function(res) {
-                    // $('.toast-title').append(res.status)
-                    // $('.toast-text').append(res.message)
-                    // var toast = new bootstrap.Toast($('.toast'))
-                    // toast.show()
-                    getData()
-                    $('#editUserModal').modal('toggle')
-                    // setTimeout(() => {
-                    //     toast.hide()
-                    //     $('.toast-title').text("")
-                    //     $('.toast-text').text("")
-                    // }, 4000);
+                    if(res.status == "Gagal"){
+                        $('.toast-header').addClass('bg-danger')
+                        $('.toast-title').append(res.status)
+                        $('.toast-text').append(res.message)
+                        var toast = new bootstrap.Toast($('.toast'))
+                        $('.toast').toast('show')
+                        setTimeout(() => {
+                            $('.toast-title').append("")
+                            $('.toast-text').append("")
+                            $('.toast-header').removeClass('bg-danger')
+                        }, 4000)
+                    }else{
+                        $('.toast-title').append(res.status)
+                        $('.toast-text').append(res.message)
+                        $('.toast-header').addClass('bg-danger')
+                        var toast = new bootstrap.Toast($('.toast'))
+                        $('.toast').toast('show')
+                        getData()
+                        $('#editUserModal').modal('toggle')
+                        setTimeout(() => {
+                            toast.hide()
+                            $('.toast-title').append("")
+                            $('.toast-text').append("")
+                            $('.toast-header').removeClass('bg-danger')
+                        }, 4000)
+                    }
                 },
                 error:function(res){
                     console.log(res)
@@ -368,27 +398,31 @@
                 processData: false,
                 contentType: false,
                 success: function(res) {
-                    if(res.status === "Gagal"){
+                    if(res.status == "Gagal"){
                         $('.toast-header').addClass('bg-danger')
+                        $('.toast-title').append(res.status)
+                        $('.toast-text').append(res.message)
+                        var toast = new bootstrap.Toast($('.toast'))
+                        $('.toast').toast('show')
                         setTimeout(() => {
-                            $('.toast-title').append(res.status)
-                            $('.toast-text').append(res.message)
+                            $('.toast-title').append("")
+                            $('.toast-text').append("")
                             $('.toast-header').removeClass('bg-danger')
                         }, 4000)
                     }else{
-                        // $('.toast-header').addClass('bg-primary')
-                        // $('.toast-title').append(res.status)
-                        // $('.toast-text').append(res.message)
-                        // var toast = new bootstrap.Toast($('.toast'))
-                        // toast.show()
+                        $('.toast-header').addClass('bg-primary')
+                        $('.toast-title').append(res.status)
+                        $('.toast-text').append(res.message)
+                        var toast = new bootstrap.Toast($('.toast'))
+                        $('.toast').toast('show')
                         getData()
                         $('#deleteUserModal').modal('toggle')
-                        // setTimeout(() => {
-                        //     toast.hide()
-                        //     $('.toast-title').text("")
-                        //     $('.toast-text').text("")
-                        //     $('.toast-header').removeClass('bg-primary')
-                        // }, 4000);
+                        setTimeout(() => {
+                            toast.hide()
+                            $('.toast-title').text("")
+                            $('.toast-text').text("")
+                            $('.toast-header').removeClass('bg-primary')
+                        }, 4000);
                     }
                 },
                 error:function(res){
