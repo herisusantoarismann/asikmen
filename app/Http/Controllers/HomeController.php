@@ -441,7 +441,6 @@ class HomeController extends Controller
                 return response()->json([
                     'status' => 'Berhasil',
                     'message' => 'User berhasil diubah!',
-                    'data' => $request->old_password
                 ]);
             } else {
                 return response()->json([
